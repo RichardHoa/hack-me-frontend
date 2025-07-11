@@ -6,6 +6,11 @@
 	import { localizeHref, setLocale } from '$lib/paraglide/runtime';
 	import { m } from '$lib/paraglide/messages.js';
 	import { fade } from 'svelte/transition';
+	import { page } from '$app/state';
+
+	function isCurrentPage(path) {
+		return page.url.pathname === path;
+	}
 </script>
 
 <ModeWatcher defaultMode="dark" />
@@ -14,9 +19,23 @@
 	<img src="" alt="Logo" class="logo" />
 	<div>
 		<ul class="menu">
-			<li><a href="/" class="hover:underline">{m.true_stock_fireant_startle()}</a></li>
 			<li>
-				<a href={localizeHref('/challenge')} class="hover:underline">{m.neat_close_elk_smile()}</a>
+				<a href="/" class:active-link={isCurrentPage('/')}>
+					{m.true_stock_fireant_startle()}
+				</a>
+			</li>
+			<li>
+				<a
+					href={localizeHref('/challenge')}
+					class:active-link={isCurrentPage(localizeHref('/challenge'))}
+				>
+					{m.neat_close_elk_smile()}
+				</a>
+			</li>
+			<li>
+				<a href={localizeHref('/login')} class:active-link={isCurrentPage(localizeHref('/login'))}>
+					Login
+				</a>
 			</li>
 		</ul>
 		<ThemeToggle />
@@ -35,6 +54,10 @@
 </footer>
 
 <style>
+	.active-link {
+		font-weight: bold;
+	}
+
 	footer {
 		padding: 20px;
 		text-align: center;

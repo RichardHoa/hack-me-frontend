@@ -1,6 +1,8 @@
 import { sequence } from '@sveltejs/kit/hooks';
 import * as auth from '$lib/server/auth';
 import { paraglideMiddleware } from '$lib/paraglide/server';
+import { ACCESS_TOKEN_NAME } from '$lib/utils';
+import { jwtDecode } from 'jwt-decode';
 
 const handleParaglide = ({ event, resolve }) =>
 	paraglideMiddleware(event.request, ({ request, locale }) => {
@@ -12,24 +14,44 @@ const handleParaglide = ({ event, resolve }) =>
 	});
 
 const handleAuth = async ({ event, resolve }) => {
-	const sessionToken = event.cookies.get(auth.sessionCookieName);
+	const accessToken = event.cookies.get(ACCESS_TOKEN_NAME);
+	// console.log(`event cookies: ${JSON.stringify(event.cookies.getAll())}`);
 
-	if (!sessionToken) {
+	if (!accessToken) {
 		event.locals.user = null;
-		event.locals.session = null;
 		return resolve(event);
 	}
 
-	const { session, user } = await auth.validateSessionToken(sessionToken);
-
-	if (session) {
-		auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
-	} else {
-		auth.deleteSessionTokenCookie(event);
+	let payload;
+	try {
+		payload = jwtDecode(accessToken);
+	} catch (err) {
+		// Malformed token
+		event.cookies.delete('ACCESS_TOKEN_NAME');
+		event.locals.user = null;
+		return resolve(event);
 	}
 
-	event.locals.user = user;
-	event.locals.session = session;
+	const now = Math.floor(Date.now() / 1000);
+	const { iat, exp } = payload;
+
+	const MAX_TOKEN_LIFESPAN = 60 * 60 * 24; // 24 hours
+
+	// Validate token claims
+	if (
+		typeof iat !== 'number' ||
+		typeof exp !== 'number' ||
+		iat > now || // issued in future
+		exp <= now || // already expired
+		exp - iat > MAX_TOKEN_LIFESPAN // suspiciously long lifespan
+	) {
+		event.cookies.delete('ACCESS_TOKEN_NAME');
+		event.locals.user = null;
+		return resolve(event);
+	}
+
+	event.locals.user = { authorized: true, iat, exp, ...payload };
+
 	return resolve(event);
 };
 

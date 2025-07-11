@@ -1,10 +1,9 @@
 import { error } from '@sveltejs/kit';
-import { env } from '$env/dynamic/public';
 import axios from 'axios';
 
 export async function load({ params }) {
 	try {
-		const url = `${env.PUBLIC_API_DOMAIN}/${env.PUBLIC_API_VERSION}/challenges?exactName=${params.challengeName}`;
+		const url = `/challenges?exactName=${params.challengeName}`;
 		const response = await axios.get(url);
 
 		if (response.data.data.length === 0) {

@@ -1,14 +1,16 @@
 import axios from 'axios';
 import { error } from '@sveltejs/kit';
 import { env } from '$env/dynamic/public';
-import { DEFAULT_PAGE_SIZE } from '$lib/utils';
+import { DEFAULT_PAGE_SIZE, requireLogin } from '$lib/utils';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load() {
 	try {
 		const url = `${env.PUBLIC_API_DOMAIN}/${env.PUBLIC_API_VERSION}/challenges?pageSize=${DEFAULT_PAGE_SIZE}`;
-		console.log(url);
 		const response = await axios.get(url);
+
+		const user = requireLogin();
+		console.log(user.authorized);
 		return {
 			data: response.data
 		};

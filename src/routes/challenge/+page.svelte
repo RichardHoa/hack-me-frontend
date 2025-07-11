@@ -48,7 +48,7 @@
 			params.append('popularity', popularity);
 		}
 
-		const url = `${env.PUBLIC_API_DOMAIN}/${env.PUBLIC_API_VERSION}/challenges?page=${page}&pageSize=${DEFAULT_PAGE_SIZE}&${params.toString()}`;
+		const url = `/challenges?page=${page}&pageSize=${DEFAULT_PAGE_SIZE}&${params.toString()}`;
 
 		try {
 			filteredChallenges = [];
