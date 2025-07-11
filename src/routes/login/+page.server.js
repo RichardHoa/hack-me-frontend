@@ -37,7 +37,6 @@ export const actions = {
 						const decoded = jwtDecode(value); // Assumes value is a JWT
 						const now = Math.floor(Date.now() / 1000);
 						maxAge = decoded.exp - now;
-						console.log(name);
 						if (name === 'accessToken') {
 							accessTokenMaxAge = maxAge;
 						}
@@ -57,7 +56,6 @@ export const actions = {
 				}
 			}
 
-			console.log(csrfTokenValue, accessTokenMaxAge);
 			// set csrf token
 			cookies.set('csrfToken', csrfTokenValue, {
 				path: '/',
@@ -69,7 +67,6 @@ export const actions = {
 				loginMessage: response.data.message
 			};
 		} catch (err) {
-			console.log(err);
 			return fail(err.response.status, {
 				loginSuccess: false,
 				loginMessage: err.response.data.message
@@ -94,7 +91,6 @@ export const actions = {
 				registrationMessage: response.data.message
 			};
 		} catch (err) {
-			console.log(err);
 			return fail(err.response.status, {
 				registrationSuccess: false,
 				registrationMessage: err.response.data.message

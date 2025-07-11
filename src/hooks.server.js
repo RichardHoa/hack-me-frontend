@@ -15,7 +15,6 @@ const handleParaglide = ({ event, resolve }) =>
 
 const handleAuth = async ({ event, resolve }) => {
 	const accessToken = event.cookies.get(ACCESS_TOKEN_NAME);
-	// console.log(`event cookies: ${JSON.stringify(event.cookies.getAll())}`);
 
 	if (!accessToken) {
 		event.locals.user = null;
