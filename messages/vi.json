@@ -1,4 +1,18 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
-	"hello_world": "Hello, {name} from vi!"
+	"hello_world": "Xin chào {name} từ Việt Nam!",
+	"hello_text": "Xin chào",
+	"trick_front_lion_create": "Tác giả backend và frontend: <a href='https://richardhoa.github.io/' target='_blank' rel='noopener noreferrer'> Đặng Thái Hoà </a>",
+	"safe_aloof_lobster_hunt": "Trang trước",
+	"lower_close_mantis_praise": "Trang",
+	"next_away_starfish_harbor": "trong số",
+	"mealy_safe_piranha_scold": "Trang sau",
+	"inner_day_rooster_offer": "Tác giả",
+	"lucky_true_bumblebee_gulp": "Được tạo vào",
+	"true_stock_fireant_startle": "Trang chủ",
+	"neat_close_elk_smile": "Thử thách",
+	"honest_bad_zebra_build": "Chào mừng đến HACK-ME",
+	"free_acidic_jackal_gasp": "Đây là website mà mọi người có thể tạo ra các thử thách, người đăng nhập có thể phản hồi các thử thách này bằng cách HACK vào các thử thách",
+	"upper_steep_ant_bump": "Đi tới danh sách thử thách",
+	"wild_teal_puffin_drip": "Thể loại"
 }

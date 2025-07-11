@@ -2,6 +2,7 @@
 	import Comment from './Comment.svelte';
 	import { formatDate } from '$lib/utils.js';
 	import { marked } from 'marked';
+	import { error } from '@sveltejs/kit';
 	let { data } = $props();
 
 	const challenge = data.data.data[0];

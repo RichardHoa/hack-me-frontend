@@ -10,9 +10,6 @@
 	<button onclick={() => setLocale('en')}>en</button>
 	<button onclick={() => setLocale('vi')}>vi</button>
 </div>
-<p>
-	If you use VSCode, install the <a
-		href="https://marketplace.visualstudio.com/items?itemName=inlang.vs-code-extension"
-		target="_blank">Sherlock i18n extension</a
-	> for a better i18n experience.
-</p>
+<h2>
+	{m.trick_front_lion_create()}
+</h2>

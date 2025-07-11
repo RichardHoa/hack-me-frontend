@@ -9,7 +9,32 @@ export default defineConfig({
 		devtoolsJson(),
 		paraglideVitePlugin({
 			project: './project.inlang',
-			outdir: './src/lib/paraglide'
+			outdir: './src/lib/paraglide',
+			strategy: ['cookie', 'preferredLanguage', 'baseLocale'],
+			urlPatterns: [
+				{
+					pattern: '/challenge/:name',
+					localized: [
+						['en', '/challenge/:name'],
+						['vi', '/thu-thach/:name']
+					]
+				},
+				{
+					pattern: '/challenge',
+					localized: [
+						['en', '/challenge'],
+						['vi', '/thu-thach']
+					]
+				},
+				// Wildcard pattern for untranslated routes
+				{
+					pattern: '/:path(.*)?',
+					localized: [
+						['en', '/:path(.*)?'],
+						['vi', '/:path(.*)?']
+					]
+				}
+			]
 		})
 	],
 	test: {

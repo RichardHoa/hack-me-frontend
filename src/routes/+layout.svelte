@@ -3,6 +3,9 @@
 	let { children } = $props();
 	import ThemeToggle from './ThemeToggle.svelte';
 	import '../app.css';
+	import { localizeHref, setLocale } from '$lib/paraglide/runtime';
+	import { m } from '$lib/paraglide/messages.js';
+	import { fade } from 'svelte/transition';
 </script>
 
 <ModeWatcher defaultMode="dark" />
@@ -11,11 +14,15 @@
 	<img src="" alt="Logo" class="logo" />
 	<div>
 		<ul class="menu">
-			<li><a href="/" class="hover:underline">Home</a></li>
-			<li><a href="/about" class="hover:underline">About</a></li>
-			<li><a href="/contact" class="hover:underline">Contact</a></li>
+			<li><a href="/" class="hover:underline">{m.true_stock_fireant_startle()}</a></li>
+			<li>
+				<a href={localizeHref('/challenge')} class="hover:underline">{m.neat_close_elk_smile()}</a>
+			</li>
 		</ul>
 		<ThemeToggle />
+
+		<button onclick={() => setLocale('en')}>en</button>
+		<button onclick={() => setLocale('vi')}>vi</button>
 	</div>
 </nav>
 
@@ -23,10 +30,24 @@
 	{@render children()}
 </main>
 
+<footer>
+	{@html m.trick_front_lion_create()}
+</footer>
+
 <style>
+	footer {
+		padding: 20px;
+		text-align: center;
+		margin-top: 20px;
+		height: 20px;
+		background-color: var(--background);
+	}
+
 	main {
 		max-width: 1200px;
-		margin: 30px auto 0px auto;
+		width: 100%;
+		flex: 1;
+		margin: 30px auto 0 auto;
 		padding: 0 10px;
 	}
 	nav {

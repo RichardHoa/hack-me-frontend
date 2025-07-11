@@ -1,4 +1,18 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
-	"hello_world": "Hello, {name} from en!"
+	"hello_world": "Hello, {name} from en!",
+	"hello_text": "hellothere",
+	"trick_front_lion_create": "Created by <a href='https://richardhoa.github.io/' target='_blank' rel='noopener noreferrer'> Richard Hoa </a>",
+	"safe_aloof_lobster_hunt": "Prev",
+	"lower_close_mantis_praise": "Page",
+	"next_away_starfish_harbor": "of",
+	"mealy_safe_piranha_scold": "Next",
+	"inner_day_rooster_offer": "Author",
+	"lucky_true_bumblebee_gulp": "Created",
+	"true_stock_fireant_startle": "Home",
+	"neat_close_elk_smile": "Challenge",
+	"honest_bad_zebra_build": "Welcome to HACK-ME",
+	"free_acidic_jackal_gasp": "It's a website where people post challenge, and you can response to these challenges, by HACKING THEM!",
+	"upper_steep_ant_bump": "Goes to challenges list",
+	"wild_teal_puffin_drip": "Category"
 }
