@@ -15,6 +15,28 @@ export function formatDate(dateStr) {
 	});
 }
 
+export function formatNow() {
+	const date = new Date();
+
+	const pad = (num, size = 2) => String(num).padStart(size, '0');
+
+	const year = date.getFullYear();
+	const month = pad(date.getMonth() + 1);
+	const day = pad(date.getDate());
+	const hour = pad(date.getHours());
+	const minute = pad(date.getMinutes());
+	const second = pad(date.getSeconds());
+
+	const ms = pad(date.getMilliseconds(), 6);
+
+	const tzOffsetMin = date.getTimezoneOffset();
+	const sign = tzOffsetMin <= 0 ? '+' : '-';
+	const tzHours = pad(Math.floor(Math.abs(tzOffsetMin) / 60));
+	const tzMinutes = pad(Math.abs(tzOffsetMin) % 60);
+
+	return `${year}-${month}-${day}T${hour}:${minute}:${second}.${ms}${sign}${tzHours}:${tzMinutes}`;
+}
+
 export function requireLogin() {
 	const { locals } = getRequestEvent();
 

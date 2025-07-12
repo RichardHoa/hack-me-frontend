@@ -2,16 +2,20 @@
 	// @ts-nocheck
 
 	import Comment from './Comment.svelte';
-	import { CHALLENGE_CATEGORIES, formatDate } from '$lib/utils.js';
+	import { CHALLENGE_CATEGORIES, formatDate, formatNow } from '$lib/utils.js';
+	import { ArrowUpFromDot } from 'lucide-svelte';
 	import { marked } from 'marked';
 	import { error } from '@sveltejs/kit';
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import { localizeHref } from '$lib/paraglide/runtime';
 	let { data, form } = $props();
-	const challenge = data.data.data[0];
+	let challenge = $derived(data.challenge);
+	let comments = $derived(data.challenge.comments);
+	let challengeResponse = $derived(data.challengeResponse);
 
 	let editMode = $state(false);
+	let challengeResponseMode = $state(false);
 	let formSubmit = $state(false);
 	let formResult = $state(null);
 </script>
@@ -32,25 +36,70 @@
 		<button onclick={() => (editMode = !editMode)}
 			>{!editMode ? 'Edit challenge' : 'Exit edit mode'}</button
 		>
+	{:else}
+		<button onclick={() => (challengeResponseMode = !challengeResponseMode)}
+			>{!challengeResponseMode ? 'Make a response' : 'Exit the form'}
+		</button>
 	{/if}
 </div>
 
-{#if editMode === false}
+{#if editMode === false && challengeResponseMode === false}
 	<div class="challenge-content">
 		{@html marked.parse(challenge.content)}
 	</div>
-
-	{#if challenge.comments?.length > 0}
-		<h2 class="comment-heading">Comments</h2>
+	<h2 class="heading">Comments</h2>
+	<form>
+		<label>
+			Make a comment
+			<input type="text" />
+		</label>
+		<button type="submit">Comment</button>
+	</form>
+	{#if comments?.length > 0}
 		<div class="comments">
-			{#each challenge.comments as comment}
+			{#each comments as comment}
 				<Comment {comment} />
 			{/each}
 		</div>
 	{:else}
 		<p class="no-comments">No comments yet.</p>
 	{/if}
-{:else}
+
+	<h2 class="heading">Challenge Responses</h2>
+	{#key challengeResponse.length}
+		{#each challengeResponse as res}
+			<div class="challenge-response">
+				<div class="response-meta">
+					<h2 class="response-title">{res.name}</h2>
+					<p class="response-author">By: {res.authorName}</p>
+					<p class="response-time">
+						Created: {formatDate(res.createdAt)}
+					</p>
+				</div>
+
+				<div class="response-content">
+					{@html marked.parse(res.content)}
+				</div>
+
+				<div class="response-votes">
+					<span class="vote up">⬆️ {res.upVote}</span>
+					<span class="vote down">⬇️ {res.downVote}</span>
+				</div>
+
+				{#if res.comments?.length > 0}
+					<h3 class="comment-heading">Comments</h3>
+					<div class="comments">
+						{#each res.comments as comment}
+							<Comment {comment} />
+						{/each}
+					</div>
+				{:else}
+					<p class="no-comments">No comments yet.</p>
+				{/if}
+			</div>
+		{/each}
+	{/key}
+{:else if editMode === true}
 	<div class="form-card">
 		<h2>Edit mode</h2>
 
@@ -63,17 +112,14 @@
 				return async ({ result, update }) => {
 					// await update();
 					formSubmit = false;
+					formResult = result.data;
 
-					if (result.type === 'success' || result.type === 'failure') {
-						formResult = result.data;
-
-						if (result.data.success) {
-							setTimeout(() => {
-								window.location.href = localizeHref(
-									`/challenge/${encodeURIComponent(result.data.newName)}`
-								);
-							}, 2000);
-						}
+					if (formResult.newName !== '') {
+						setTimeout(() => {
+							window.location.href = localizeHref(
+								`/challenge/${encodeURIComponent(formResult.newName)}`
+							);
+						}, 2000);
 					}
 				};
 			}}
@@ -121,14 +167,86 @@
 				<div class="success-message">
 					{formResult.message}
 					<br />
-					The page will reload in 2 seconds
+					You will be redirect to a new page after 2 seconds
 				</div>
 			{/if}
+		{/if}
+	</div>
+{:else if challengeResponseMode === true}
+	<div class="form-challenge form-card">
+		<h2>Challenge response</h2>
+
+		<!-- challenge response -->
+		<form
+			method="POST"
+			action="?/challenges/responses"
+			use:enhance={({ formElement, formData, action, cancel, submitter }) => {
+				formSubmit = true;
+				const content = formData.get('content');
+				const name = formData.get('name');
+				return async ({ result, update }) => {
+					await update();
+					formSubmit = false;
+				};
+			}}
+		>
+			<input type="hidden" value={challenge.ID} name="challengeID" />
+			<label for="responseName">
+				Challenge response name
+				<input type="text" id="responseName" name="name" required />
+			</label>
+
+			<label for="content">Content</label>
+			<small id="content-helper">The content can be displayed in Markdown</small>
+			<textarea id="content" name="content" rows="30" required aria-describedby="content-helper"
+			></textarea>
+			<button type="submit" class="submit-button" disabled={formSubmit}
+				>{formSubmit ? 'Please wait' : 'Make a challenge response'}</button
+			>
+		</form>
+
+		{#if form}
+			<div class={form.success ? 'success-message' : 'error-message'} role="alert">
+				{form.message}
+			</div>
 		{/if}
 	</div>
 {/if}
 
 <style>
+	.challenge-response {
+		border: 1px solid var(--light-gray);
+		padding: 1rem;
+		margin-bottom: 1.5rem;
+		border-radius: 8px;
+	}
+
+	.response-meta {
+		margin-bottom: 1rem;
+	}
+
+	.response-title {
+		font-size: 1.5rem;
+		font-weight: bold;
+		margin-bottom: 0.5rem;
+	}
+
+	.response-author,
+	.response-time {
+		font-size: 0.9rem;
+	}
+
+	.response-content {
+		margin: 1rem 0;
+	}
+
+	.response-votes {
+		display: flex;
+		gap: 1rem;
+		font-size: 1rem;
+		font-weight: bold;
+	}
+
 	.form-card {
 		max-width: 1200px;
 	}
@@ -172,7 +290,7 @@
 		display: block;
 	}
 
-	.comment-heading {
+	.heading {
 		font-size: 1.5rem;
 		margin: 2rem 0 1rem;
 	}
@@ -186,5 +304,9 @@
 	.no-comments {
 		font-style: italic;
 		margin-top: 1rem;
+	}
+
+	.form-challenge {
+		max-width: 800px;
 	}
 </style>
