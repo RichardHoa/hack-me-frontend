@@ -1,11 +1,12 @@
 <script>
+	// @ts-nocheck
+
 	import { ModeWatcher } from 'mode-watcher';
-	let { children } = $props();
+	let { children, data } = $props();
 	import ThemeToggle from './ThemeToggle.svelte';
 	import '../app.css';
 	import { localizeHref, setLocale } from '$lib/paraglide/runtime';
 	import { m } from '$lib/paraglide/messages.js';
-	import { fade } from 'svelte/transition';
 	import { page } from '$app/state';
 
 	function isCurrentPage(path) {
@@ -16,6 +17,7 @@
 <ModeWatcher defaultMode="dark" />
 
 <nav>
+	<a class="skip-to-content-link" href="#main"> Skip to main content </a>
 	<img src="" alt="Logo" class="logo" />
 	<div>
 		<ul class="menu">
@@ -33,9 +35,21 @@
 				</a>
 			</li>
 			<li>
-				<a href={localizeHref('/login')} class:active-link={isCurrentPage(localizeHref('/login'))}>
-					Login
-				</a>
+				{#if data.user != undefined}
+					<a
+						href={localizeHref('/account')}
+						class:active-link={isCurrentPage(localizeHref('/account'))}
+					>
+						Account
+					</a>
+				{:else}
+					<a
+						href={localizeHref('/login')}
+						class:active-link={isCurrentPage(localizeHref('/login'))}
+					>
+						Login
+					</a>
+				{/if}
 			</li>
 		</ul>
 		<ThemeToggle />
@@ -45,7 +59,7 @@
 	</div>
 </nav>
 
-<main>
+<main id="main">
 	{@render children()}
 </main>
 
@@ -54,6 +68,26 @@
 </footer>
 
 <style>
+	.skip-to-content-link {
+		background: var(--hightlight);
+		color: black;
+		height: 50px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 1.5rem;
+		font-weight: 600;
+		left: 30%;
+		padding: 8px;
+		position: absolute;
+		transform: translateY(-300%);
+		transition: transform 0.3s;
+	}
+
+	.skip-to-content-link:focus {
+		transform: translateY(0%);
+	}
+
 	.active-link {
 		font-weight: bold;
 	}

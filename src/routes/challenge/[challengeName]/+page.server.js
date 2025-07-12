@@ -1,4 +1,6 @@
+import { axiosWithCookies } from '$lib/utils';
 import { error } from '@sveltejs/kit';
+import { fail } from 'assert';
 import axios from 'axios';
 
 export async function load({ params }) {
@@ -7,7 +9,7 @@ export async function load({ params }) {
 		const response = await axios.get(url);
 
 		if (response.data.data.length === 0) {
-			throw error(400, `Challenge name: ${params.challengeName} cannot be found`);
+			throw error(400, `Challenge name: |${params.challengeName}| cannot be found`);
 		}
 
 		return {
@@ -32,3 +34,39 @@ export async function load({ params }) {
 		throw error(500, 'Failed to connect to backend. Please try again later.');
 	}
 }
+
+export const actions = {
+	challenges: async (event) => {
+		const axios = axiosWithCookies(event);
+
+		const formData = await event.request.formData();
+		const content = formData.get('content');
+		const name = formData.get('name');
+		const oldName = formData.get('oldName');
+		const category = formData.get('category');
+
+		const data = {
+			oldName: oldName,
+			content: content,
+			category: category
+		};
+		if (oldName !== name) {
+			data.name = name;
+		}
+		try {
+			const response = await axios.put('/challenges', data);
+
+			return {
+				success: true,
+				message: response.data.message,
+				oldName: oldName,
+				newName: name
+			};
+		} catch (err) {
+			return fail(err.response.status, {
+				success: false,
+				message: err.response.data.message
+			});
+		}
+	}
+};

@@ -1,7 +1,8 @@
+// @ts-nocheck
 import { sequence } from '@sveltejs/kit/hooks';
 import * as auth from '$lib/server/auth';
 import { paraglideMiddleware } from '$lib/paraglide/server';
-import { ACCESS_TOKEN_NAME } from '$lib/utils';
+import { ACCESS_TOKEN_NAME, REFRESH_TOKEN_NAME } from '$lib/utils';
 import { jwtDecode } from 'jwt-decode';
 
 const handleParaglide = ({ event, resolve }) =>
@@ -15,6 +16,7 @@ const handleParaglide = ({ event, resolve }) =>
 
 const handleAuth = async ({ event, resolve }) => {
 	const accessToken = event.cookies.get(ACCESS_TOKEN_NAME);
+	const refreshToken = event.cookies.get(REFRESH_TOKEN_NAME);
 
 	if (!accessToken) {
 		event.locals.user = null;
@@ -49,7 +51,9 @@ const handleAuth = async ({ event, resolve }) => {
 		return resolve(event);
 	}
 
-	event.locals.user = { authorized: true, iat, exp, ...payload };
+	const refreshTokenPayload = jwtDecode(refreshToken);
+
+	event.locals.user = { userName: refreshTokenPayload.userName, iat, exp, ...payload };
 
 	return resolve(event);
 };

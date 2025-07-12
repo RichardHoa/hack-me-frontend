@@ -4,6 +4,10 @@
 	import { formatDate } from '$lib/utils.js';
 </script>
 
+<svelte:head>
+	<title>HACKME: Landing page</title>
+</svelte:head>
+
 <div>
 	<h1>{m.honest_bad_zebra_build()}</h1>
 	<p>{m.free_acidic_jackal_gasp()}</p>

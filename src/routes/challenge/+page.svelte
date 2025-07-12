@@ -1,26 +1,22 @@
 <script>
+	// @ts-nocheck
+
 	import { localizeHref } from '$lib/paraglide/runtime.js';
+	import { ArrowBigLeft } from 'lucide-svelte';
+	import { ArrowBigRight } from 'lucide-svelte';
+
 	import { m } from '$lib/paraglide/messages.js';
-	let { data } = $props();
-	import { DEFAULT_PAGE_SIZE, formatDate } from '$lib/utils.js';
-	import { env } from '$env/dynamic/public';
+	import { CHALLENGE_CATEGORIES, DEFAULT_PAGE_SIZE, formatDate } from '$lib/utils.js';
 	import axios from 'axios';
-	import { blur, crossfade, fade, fly, slide } from 'svelte/transition';
-	import { duration } from 'drizzle-orm/gel-core';
+	import { fade } from 'svelte/transition';
 	import { tick } from 'svelte';
+
+	let { data } = $props();
 	const challenges = data.data.data;
 	const metadata = data.data.metadata;
 
 	let currentPage = $state(Number(metadata.currentPage));
 	let maxPage = $state(Number(metadata.maxPage));
-
-	let categories = [
-		'web hacking',
-		'embedded hacking',
-		'reverse engineering',
-		'crypto challenge',
-		'forensics'
-	];
 
 	let selectedCategories = new Set();
 	let searchTerm = $state('');
@@ -56,7 +52,7 @@
 
 			const res = await axios.get(url);
 			filteredChallenges = res.data.data;
-			maxPage = res.data.metadata.maxPage;
+			maxPage = Number(res.data.metadata.maxPage);
 		} catch (e) {
 			error = 'Something went wrong.';
 			console.error(e);
@@ -96,6 +92,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>HACKME: Challenges</title>
+</svelte:head>
+<h1>Challenges page</h1>
 <form
 	onsubmit={(e) => {
 		e.preventDefault();
@@ -105,7 +105,7 @@
 	<!-- ✅ Category Filter -->
 	<fieldset>
 		<legend>Category filter</legend>
-		{#each categories as cat}
+		{#each CHALLENGE_CATEGORIES as cat}
 			<label>
 				<input
 					type="checkbox"
@@ -134,6 +134,8 @@
 	</label>
 </form>
 
+<a href={localizeHref('/add-challenge')}>Add new challenge</a>
+
 <!-- 🧾 Result List -->
 {#if error}
 	<p class="error">{error}</p>
@@ -146,7 +148,7 @@
 						<h2>{c.name}</h2>
 						<h3>{m.inner_day_rooster_offer()}: {c.userName}</h3>
 						<h3>{m.wild_teal_puffin_drip()}: {c.category}</h3>
-						<h3>{m.lucky_true_bumblebee_gulp()}: {c.popularityScore}</h3>
+						<h3>{m.lucky_true_bumblebee_gulp()}: {formatDate(c.createdAt)}</h3>
 						<p>{truncate(c.content)}</p>
 					</div>
 				</a>
@@ -157,19 +159,28 @@
 
 <div class="pagination">
 	<button onclick={() => goToPage(currentPage - 1)} disabled={currentPage === 1}>
-		⬅ {m.safe_aloof_lobster_hunt()}
+		<ArrowBigLeft />
+		{m.safe_aloof_lobster_hunt()}
 	</button>
 	<span
 		>{m.lower_close_mantis_praise()} {currentPage} {m.next_away_starfish_harbor()} {maxPage}</span
 	>
 	<button onclick={() => goToPage(currentPage + 1)} disabled={currentPage === maxPage}>
-		{m.mealy_safe_piranha_scold()} ➡
+		{m.mealy_safe_piranha_scold()}
+		<ArrowBigRight />
 	</button>
 </div>
 
 <style>
-	form {
-		margin-bottom: 1.5rem;
+	a {
+		margin: 10px 0;
+		display: block;
+	}
+	h1 {
+		font-size: 2rem;
+		text-align: center;
+
+		margin-bottom: 30px;
 	}
 	label {
 		display: inline-block;
@@ -189,7 +200,7 @@
 	}
 
 	.challenge-box {
-		border: 1px solid black;
+		border: 1px solid var(--light-gray);
 		border-radius: 8px;
 		padding: 1rem;
 		margin-bottom: 1rem;
@@ -222,8 +233,12 @@
 
 	.pagination button {
 		padding: 0.5rem 1rem;
-		border: 1px solid black;
-		background: white;
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
+		border: 1px solid var(--light-gray);
+		background: var(--background);
 		cursor: pointer;
 		border-radius: 4px;
 		transition: background 0.2s ease;
@@ -232,10 +247,6 @@
 	.pagination button:disabled {
 		opacity: 0.5;
 		cursor: not-allowed;
-	}
-
-	.pagination button:hover:not(:disabled) {
-		background: #eee;
 	}
 
 	.pagination span {

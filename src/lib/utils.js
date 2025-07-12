@@ -5,14 +5,21 @@ import { getRequestEvent } from '$app/server';
 
 export function formatDate(dateStr) {
 	const date = new Date(dateStr);
-	return date.toLocaleDateString();
+	return date.toLocaleString('en-GB', {
+		day: '2-digit',
+		month: '2-digit',
+		year: 'numeric',
+		hour: '2-digit',
+		minute: '2-digit',
+		hour12: false
+	});
 }
 
 export function requireLogin() {
 	const { locals } = getRequestEvent();
 
 	if (!locals.user) {
-		console.error('There is no user');
+		return undefined;
 	}
 
 	return locals.user;
@@ -43,3 +50,11 @@ export function axiosWithCookies(event) {
 // constants naming
 export const DEFAULT_PAGE_SIZE = 5;
 export const ACCESS_TOKEN_NAME = 'accessToken';
+export const REFRESH_TOKEN_NAME = 'refreshToken';
+export const CHALLENGE_CATEGORIES = [
+	'web hacking',
+	'embedded hacking',
+	'reverse engineering',
+	'crypto challenge',
+	'forensics'
+];

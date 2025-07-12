@@ -1,5 +1,4 @@
 import { error } from '@sveltejs/kit';
-import { env } from '$env/dynamic/public';
 import { axiosWithCookies, DEFAULT_PAGE_SIZE, requireLogin } from '$lib/utils';
 
 /** @type {import('./$types').PageServerLoad} */
@@ -11,7 +10,6 @@ export async function load(event) {
 		const response = await axios.get(url);
 
 		const user = requireLogin();
-		console.log(user);
 		return {
 			data: response.data
 		};

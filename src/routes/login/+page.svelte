@@ -10,9 +10,13 @@
 	let registrationFormSubmit = $state(false);
 </script>
 
+<svelte:head>
+	<title>HACKME: Login and Registration</title>
+</svelte:head>
+<h1>Auth page</h1>
 <!-- Login Form Card -->
 <div class="form-card">
-	<h1>Login</h1>
+	<h2>Login</h2>
 
 	<!-- Social Login Placeholders -->
 	<div class="social-buttons">
@@ -70,7 +74,7 @@
 
 <!-- Registration Form Card -->
 <div class="form-card">
-	<h1>Register</h1>
+	<h2>Register</h2>
 
 	<form
 		method="post"
@@ -134,29 +138,33 @@
 		max-width: 500px;
 	}
 
-	/* Heading styling */
 	h1 {
-		font-size: 1.875rem; /* Equivalent to text-3xl */
+		font-size: 2rem; 
 		font-weight: bold;
 		text-align: center;
-		color: #1f2937; /* Equivalent to gray-800 */
-		margin-bottom: 1.5rem; /* Equivalent to mb-6 */
+		margin-bottom: 1.5rem; 
+	}
+
+	h2 {
+		font-size: 1.875rem; 
+		font-weight: bold;
+		text-align: center;
+		margin-bottom: 1.5rem; 
 	}
 
 	/* Social login buttons container */
 	.social-buttons {
 		display: flex;
 		flex-direction: column;
-		gap: 1rem; /* Equivalent to space-y-4 */
-		margin-bottom: 1.5rem; /* Equivalent to mb-6 */
+		gap: 1rem; 
+		margin-bottom: 1.5rem; 
 	}
 
 	.plain-button {
 		width: 100%;
 		padding: 0.5rem 1rem;
-		border: 1px solid #ccc;
+		border: 1px solid var(--light-gray);
 		border-radius: 0.375rem;
-		background-color: #f0f0f0;
 		cursor: pointer;
 		font-size: 0.875rem;
 		font-weight: 500;
@@ -165,11 +173,11 @@
 	}
 
 	.plain-button:hover {
-		background-color: #e0e0e0;
+		background-color: var(--hightlight);
 	}
 
 	.plain-button:focus {
-		outline: 2px solid #3b82f6;
+		outline: 2px solid var(--hightlight);
 		outline-offset: 2px;
 	}
 
@@ -177,7 +185,7 @@
 	form {
 		display: flex;
 		flex-direction: column;
-		gap: 1rem; /* Equivalent to space-y-4 */
+		gap: 1rem; 
 	}
 
 	/* Label styling */
@@ -188,57 +196,46 @@
 	input {
 		display: block;
 		width: 100%;
-		border: 1px solid #d1d5db; /* Equivalent to border-gray-300 */
-		border-radius: 0.375rem; /* Equivalent to rounded-md */
+		border: 1px solid var(--light-gray);
+		border-radius: 0.375rem;
 		height: 2rem;
 		margin-top: 5px;
 		padding: 0 5px;
 	}
 
 	input:focus {
-		border-color: #3b82f6; /* Equivalent to focus:border-blue-500 */
+		border-color: var(--hightlight);
 		outline: none;
-		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25); /* Equivalent to focus:ring focus:ring-blue-200 */
+		box-shadow: 0 0 0 3px var(--hightlight);
 	}
 
-	/* Button styling for submit buttons */
 	.submit-button {
-		width: 100%; /* Make button full width */
-		padding: 0.625rem 1rem; /* Equivalent to py-2.5 px-4 */
-		border: none;
-		border-radius: 0.375rem; /* Equivalent to rounded-md */
-		font-size: 1rem; /* Equivalent to text-base */
-		font-weight: 600; /* Equivalent to font-semibold */
+		width: 100%;
+		padding: 0.625rem 1rem;
+		border-radius: 0.375rem;
 		margin-bottom: 10px;
 		cursor: pointer;
+		font-size: 1rem;
+		font-weight: 650;
+		border: none;
 		transition:
 			background-color 0.2s ease-in-out,
 			box-shadow 0.2s ease-in-out;
-		box-shadow:
-			0 4px 6px -1px rgba(0, 0, 0, 0.1),
-			0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Equivalent to shadow-md */
-		margin-top: 1.5rem; /* Add margin-top for spacing */
+		margin-top: 1.5rem;
 	}
 
-	.submit-button:hover {
-		box-shadow:
-			0 10px 15px -3px rgba(0, 0, 0, 0.1),
-			0 4px 6px -2px rgba(0, 0, 0, 0.05);
+	.submit-button:not(:disabled):hover {
+		background-color: var(--hightlight);
 	}
 
-	.submit-button:focus {
-		outline: 2px solid #3b82f6; /* Tailwind blue-500 */
+	.submit-button:not(:disabled):focus {
+		outline: 2px solid var(--hightlight);
 		outline-offset: 2px;
 	}
 
 	/* Error message styling */
-	.error-message {
-		color: #ef4444;
+	.error-message, .success-message {
 		text-align: center;
 	}
 
-	.success-message {
-		color: green;
-		text-align: center;
-	}
 </style>

@@ -1,6 +1,6 @@
 <script>
-	import { Sun } from '@lucide/svelte';
-	import { Moon } from '@lucide/svelte';
+	import { Sun } from 'lucide-svelte';
+	import { Moon } from 'lucide-svelte';
 
 	import { toggleMode, mode } from 'mode-watcher';
 </script>
@@ -21,14 +21,13 @@
 		gap: 0.5rem; /* spacing between icon and text */
 		padding: 0.5rem 1rem;
 		border: none;
-		border-radius: 6px;
-		background-color: var(--light-gray);
-		color: var(--background);
+		border-radius: 10px;
+		border: 2px solid var(--background);
 		cursor: pointer;
 		transition: background-color 0.2s ease;
 	}
 
 	button:hover {
-		background-color: var(--light-gray); /* slightly darker on hover */
+		background-color: var(--hightlight); /* slightly darker on hover */
 	}
 </style>
