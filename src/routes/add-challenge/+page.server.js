@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { axiosWithCookies, requireLogin } from '$lib/utils.js';
+import { axiosWithCookies } from '$lib/utils.js';
 import { fail } from '@sveltejs/kit';
 import { jwtDecode } from 'jwt-decode';
 

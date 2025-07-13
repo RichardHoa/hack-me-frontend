@@ -5,6 +5,7 @@
 	import { CHALLENGE_CATEGORIES, formatDate, formatNow } from '$lib/utils.js';
 	import { ArrowUpFromDot } from 'lucide-svelte';
 	import { marked } from 'marked';
+
 	import { error } from '@sveltejs/kit';
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
@@ -12,10 +13,11 @@
 	let { data, form } = $props();
 	let challenge = $derived(data.challenge);
 	let comments = $derived(data.challenge.comments);
-	let challengeResponse = $derived(data.challengeResponse);
+	let challengeResponses = $derived(data.challengeResponses);
 
 	let editMode = $state(false);
 	let challengeResponseMode = $state(false);
+	let commentSubmit = $state(false);
 	let formSubmit = $state(false);
 	let formResult = $state(null);
 </script>
@@ -45,29 +47,49 @@
 
 {#if editMode === false && challengeResponseMode === false}
 	<div class="challenge-content">
-		{@html marked.parse(challenge.content)}
+		{@html challenge.content}
 	</div>
 	<h2 class="heading">Comments</h2>
-	<form>
+	<form
+		method="POST"
+		action="?/comments"
+		use:enhance={({ formElement, formData, action, cancel, submitter }) => {
+			commentSubmit = true;
+			return async ({ result, update }) => {
+				await update();
+				commentSubmit = false;
+			};
+		}}
+	>
 		<label>
 			Make a comment
-			<input type="text" />
+			<input type="text" name="content" />
 		</label>
-		<button type="submit">Comment</button>
+		<input type="hidden" name="challengeID" value={challenge.id} />
+		<button type="submit">{!commentSubmit ? 'Comment' : 'Please wait'}</button>
 	</form>
+	{#if form?.id === 'comment'}
+		{#if form.success === false}
+			<p class="error-message" role="alert">{form.message}</p>
+		{/if}
+	{/if}
 	{#if comments?.length > 0}
-		<div class="comments">
-			{#each comments as comment}
-				<Comment {comment} />
-			{/each}
-		</div>
+		<details>
+			<summary>Comments</summary>
+			<div><strong>Please note that comments can only be at most 5 level deep</strong></div>
+			<div class="comments">
+				{#each comments as comment}
+					<Comment {comment} challengeID={challenge.id} />
+				{/each}
+			</div>
+		</details>
 	{:else}
 		<p class="no-comments">No comments yet.</p>
 	{/if}
 
 	<h2 class="heading">Challenge Responses</h2>
-	{#key challengeResponse.length}
-		{#each challengeResponse as res}
+	{#each challengeResponses as res}
+		<a href={localizeHref(`/challenge/response/${res.id}`)}>
 			<div class="challenge-response">
 				<div class="response-meta">
 					<h2 class="response-title">{res.name}</h2>
@@ -77,28 +99,17 @@
 					</p>
 				</div>
 
-				<div class="response-content">
-					{@html marked.parse(res.content)}
-				</div>
+				<!-- <div class="response-content">
+				{@html res.content}
+			</div> -->
 
 				<div class="response-votes">
 					<span class="vote up">⬆️ {res.upVote}</span>
 					<span class="vote down">⬇️ {res.downVote}</span>
 				</div>
-
-				{#if res.comments?.length > 0}
-					<h3 class="comment-heading">Comments</h3>
-					<div class="comments">
-						{#each res.comments as comment}
-							<Comment {comment} />
-						{/each}
-					</div>
-				{:else}
-					<p class="no-comments">No comments yet.</p>
-				{/if}
 			</div>
-		{/each}
-	{/key}
+		</a>
+	{/each}
 {:else if editMode === true}
 	<div class="form-card">
 		<h2>Edit mode</h2>
@@ -114,11 +125,17 @@
 					formSubmit = false;
 					formResult = result.data;
 
-					if (formResult.newName !== '') {
+					if (formResult.newName !== '' && formResult.success === true) {
 						setTimeout(() => {
 							window.location.href = localizeHref(
 								`/challenge/${encodeURIComponent(formResult.newName)}`
 							);
+						}, 2000);
+					}
+
+					if (formResult.newName === '' && formResult.success === true) {
+						setTimeout(() => {
+							editMode = false;
 						}, 2000);
 					}
 				};
@@ -153,7 +170,7 @@
 				rows="30"
 				required
 				aria-describedby="content-helper"
-				defaultValue={challenge.content}
+				defaultValue={data.rawChallengeContent}
 			></textarea>
 			<button type="submit" class="submit-button" disabled={formSubmit}
 				>{formSubmit ? 'Please wait' : 'Edit challenge'}</button
@@ -167,7 +184,8 @@
 				<div class="success-message">
 					{formResult.message}
 					<br />
-					You will be redirect to a new page after 2 seconds
+					<span>{formResult.newName ? 'You will be redirect to new page after 2 seconds' : ''}</span
+					>
 				</div>
 			{/if}
 		{/if}
@@ -190,7 +208,7 @@
 				};
 			}}
 		>
-			<input type="hidden" value={challenge.ID} name="challengeID" />
+			<input type="hidden" value={challenge.id} name="challengeID" />
 			<label for="responseName">
 				Challenge response name
 				<input type="text" id="responseName" name="name" required />
@@ -214,6 +232,10 @@
 {/if}
 
 <style>
+	a {
+		text-decoration: none;
+		color: inherit;
+	}
 	.challenge-response {
 		border: 1px solid var(--light-gray);
 		padding: 1rem;

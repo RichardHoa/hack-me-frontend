@@ -14,29 +14,22 @@ export async function load({ params }) {
 	const window = new JSDOM('').window;
 	const purify = DOMPurify(window);
 	try {
-		const url = `/challenges?exactName=${params.challengeName}`;
-		const response = await axios.get(url);
+		const challengeResult = await axios.get(
+			`/challenges/responses?challengeResponseID=${params.id}`
+		);
+		const challengeResponse = challengeResult.data.data[0];
 
-		const challenge = response.data.data[0];
-		if (!challenge) {
-			throw error(400, `Challenge name: |${params.challengeName}| cannot be found`);
+		const rawContent = challengeResponse.content;
+
+		if (!challengeResponse) {
+			throw error(400, `Challenge response: |${params.id}| cannot be found`);
 		}
 
-		const challengeID = response.data.data[0].id;
-		const challengeResult = await axios.get(`/challenges/responses?challengeID=${challengeID}`);
-		const challengeResponses = challengeResult.data.data;
-
-		for (let i = 0; i < challengeResponses.length; i++) {
-			challengeResponses[i].content = purify.sanitize(marked.parse(challengeResponses[i].content));
-		}
-
-		const rawChallengeContent = challenge.content;
-		challenge.content = purify.sanitize(marked.parse(challenge.content));
+		challengeResponse.content = purify.sanitize(marked.parse(challengeResponse.content));
 
 		return {
-			challenge: challenge,
-			rawChallengeContent: rawChallengeContent,
-			challengeResponses: challengeResponses
+			challengeResponse: challengeResponse,
+			rawContent: rawContent
 		};
 	} catch (err) {
 		console.error('Load error:', err);
@@ -56,49 +49,13 @@ export async function load({ params }) {
 }
 
 export const actions = {
-	challenges: async (event) => {
-		const axios = axiosWithCookies(event);
-
-		const formData = await event.request.formData();
-		const content = formData.get('content');
-		const name = formData.get('name');
-		const oldName = formData.get('oldName');
-		const category = formData.get('category');
-		let newName = '';
-
-		const data = {
-			oldName: oldName,
-			content: content,
-			category: category
-		};
-
-		if (oldName !== name) {
-			data.name = name;
-			newName = name;
-		}
-
-		try {
-			const response = await axios.put('/challenges', data);
-
-			return {
-				success: true,
-				message: response.data.message,
-				newName: newName
-			};
-		} catch (err) {
-			return {
-				success: false,
-				message: err.response.data.message
-			};
-		}
-	},
 	comments: async (event) => {
 		const axios = axiosWithCookies(event);
 		const formData = await event.request.formData();
 		const content = formData.get('content');
-		const challengeID = formData.get('challengeID');
+		const challengeResponseID = formData.get('challengeResponseID');
 
-		const data = { content: content, challengeID: challengeID };
+		const data = { content: content, challengeResponseID: challengeResponseID };
 
 		try {
 			const response = await axios.post('/comments', data);
@@ -121,9 +78,9 @@ export const actions = {
 		const formData = await event.request.formData();
 		const content = formData.get('content');
 		const parentID = formData.get('parentID');
-		const challengeID = formData.get('challengeID');
+		const challengeResponseID = formData.get('challengeResponseID');
 
-		const data = { content: content, parentID: parentID, challengeID: challengeID };
+		const data = { content: content, parentID: parentID, challengeResponseID: challengeResponseID };
 
 		try {
 			const response = await axios.post('/comments', data);
@@ -140,28 +97,30 @@ export const actions = {
 			};
 		}
 	},
-	'challenges/responses': async (event) => {
+	'challenges/response': async (event) => {
 		const axios = axiosWithCookies(event);
 
 		const formData = await event.request.formData();
 		const content = formData.get('content');
 		const name = formData.get('name');
-		const challengeID = formData.get('challengeID');
+		const challengeResponseID = formData.get('challengeResponseID');
 
 		try {
-			const response = await axios.post('/challenges/responses', {
-				challengeID: challengeID,
+			const response = await axios.put('/challenges/responses', {
+				challengeResponseID: challengeResponseID,
 				name: name,
 				content: content
 			});
 
 			return {
+				id: 'challengeResponse',
 				success: true,
-				message: response.data.message,
-				challengeResponseData: response.data.data
+				message: response.data.message
 			};
 		} catch (err) {
+			console.error(err.response.data);
 			return {
+				id: 'challengeResponse',
 				success: false,
 				message: err.response.data.message
 			};
