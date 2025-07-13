@@ -1,3 +1,9 @@
+# TODO
+
+- delete challenge, challenge response
+- delete comment, modify comment
+- upvote, downvote challenge
+
 # sv
 
 Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
