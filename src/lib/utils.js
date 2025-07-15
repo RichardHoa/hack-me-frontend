@@ -2,6 +2,7 @@
 import axios from 'axios';
 import { env } from '$env/dynamic/public';
 import { getRequestEvent } from '$app/server';
+import { jwtDecode } from 'jwt-decode';
 
 export function formatDate(dateStr) {
 	const date = new Date(dateStr);
@@ -51,6 +52,52 @@ export function requireLogin() {
 axios.defaults.baseURL = `${env.PUBLIC_API_DOMAIN}/${env.PUBLIC_API_VERSION}`;
 axios.defaults.withCredentials = true;
 
+export function fetchAndSetTokens(response, event) {
+	const setCookie = response.headers['set-cookie'];
+
+	let csrfTokenValue = null;
+	let accessTokenMaxAge = null;
+	if (setCookie) {
+		for (const raw of setCookie) {
+			const [cookieStr] = raw.split(';');
+			const [name, value] = cookieStr.split('=');
+
+			if (name === 'csrfToken') {
+				csrfTokenValue = value;
+				continue;
+			}
+
+			let maxAge;
+
+			try {
+				const decoded = jwtDecode(value); // Assumes value is a JWT
+				const now = Math.floor(Date.now() / 1000);
+				maxAge = decoded.exp - now;
+				if (name === 'accessToken') {
+					accessTokenMaxAge = maxAge;
+				}
+
+				if (maxAge <= 0) {
+					console.warn(`JWT for ${name} is already expired.`);
+					continue;
+				}
+			} catch (e) {
+				console.warn(`Failed to decode ${name}, setting session cookie.`, e);
+			}
+
+			event.cookies.set(name, value, {
+				path: '/',
+				maxAge
+			});
+		}
+
+		// set csrf token
+		event.cookies.set('csrfToken', csrfTokenValue, {
+			path: '/',
+			maxAge: accessTokenMaxAge
+		});
+	}
+}
 export function axiosWithCookies(event) {
 	const accessToken = event.cookies.get('accessToken');
 	const refreshToken = event.cookies.get('refreshToken');
@@ -69,6 +116,7 @@ export function axiosWithCookies(event) {
 		}
 	});
 }
+
 // constants naming
 export const DEFAULT_PAGE_SIZE = 5;
 export const ACCESS_TOKEN_NAME = 'accessToken';

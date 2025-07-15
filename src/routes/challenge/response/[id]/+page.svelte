@@ -17,6 +17,17 @@
 	let commentSubmit = $state(false);
 	let formSubmit = $state(false);
 	let formResult = $state(null);
+
+	let dialogRef;
+	function openConfirmDialog() {
+		dialogRef.showModal();
+	}
+	function handleConfirmDelete() {
+		document.getElementById('delete-response').click();
+	}
+	function handleCancel() {
+		dialogRef.close();
+	}
 </script>
 
 <svelte:head>
@@ -36,6 +47,16 @@
 		<button onclick={() => (editMode = !editMode)}
 			>{!editMode ? 'Edit challenge response' : 'Exit edit mode'}</button
 		>
+		<button onclick={openConfirmDialog}>Delete challenge response</button>
+	{/if}
+	{#if form?.id === 'deleteChallengeResponse'}
+		<div
+			class={form.success ? 'success-message' : 'error-message'}
+			style="text-align: center;"
+			role="alert"
+		>
+			{form.message}
+		</div>
 	{/if}
 </div>
 
@@ -135,6 +156,35 @@
 		{/if}
 	</div>
 {/if}
+
+<dialog bind:this={dialogRef}>
+	<p>Are you sure you want to delete this challenge response?</p>
+	<p style="margin-top:10px;margin-bottom:10px;">
+		If successful, you will be redirect to challenge page
+	</p>
+	<form method="dialog">
+		<button onclick={handleConfirmDelete}>Yes</button>
+		<button onclick={handleCancel}>No</button>
+	</form>
+</dialog>
+
+<form
+	id="deleteForm"
+	method="POST"
+	action="?/challenges/response/delete"
+	style="display: none;"
+	use:enhance={({ formElement, formData, action, cancel, submitter }) => {
+		formSubmit = true;
+
+		return async ({ result, update }) => {
+			await update();
+			formSubmit = false;
+		};
+	}}
+>
+	<input type="hidden" name="id" value={challengeResponse.id} />
+	<button type="submit" id="delete-response">Delete form</button>
+</form>
 
 <style>
 	.form-card {

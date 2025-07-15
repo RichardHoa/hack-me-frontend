@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { fetchAndSetTokens } from '$lib/utils';
 import { fail } from '@sveltejs/kit';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
@@ -18,49 +19,7 @@ export const actions = {
 				password: password
 			});
 
-			const setCookie = response.headers['set-cookie'];
-			let csrfTokenValue = null;
-			let accessTokenMaxAge = null;
-			if (setCookie) {
-				for (const raw of setCookie) {
-					const [cookieStr] = raw.split(';');
-					const [name, value] = cookieStr.split('=');
-
-					if (name === 'csrfToken') {
-						csrfTokenValue = value;
-						continue;
-					}
-
-					let maxAge;
-
-					try {
-						const decoded = jwtDecode(value); // Assumes value is a JWT
-						const now = Math.floor(Date.now() / 1000);
-						maxAge = decoded.exp - now;
-						if (name === 'accessToken') {
-							accessTokenMaxAge = maxAge;
-						}
-
-						if (maxAge <= 0) {
-							console.warn(`JWT for ${name} is already expired.`);
-							continue;
-						}
-					} catch (e) {
-						console.warn(`Failed to decode ${name}, setting session cookie.`, e);
-					}
-
-					cookies.set(name, value, {
-						path: '/',
-						maxAge
-					});
-				}
-			}
-
-			// set csrf token
-			cookies.set('csrfToken', csrfTokenValue, {
-				path: '/',
-				maxAge: accessTokenMaxAge
-			});
+			fetchAndSetTokens(response, event);
 
 			return {
 				loginSuccess: true,

@@ -125,5 +125,28 @@ export const actions = {
 				message: err.response.data.message
 			};
 		}
+	},
+	'challenges/response/delete': async (event) => {
+		const axios = axiosWithCookies(event);
+
+		const formData = await event.request.formData();
+		const id = formData.get('id');
+
+		try {
+			const response = await axios.delete('/challenges/responses', {
+				data: {
+					challengeResponseID: id
+				}
+			});
+		} catch (err) {
+			console.error(err.response.data);
+			return {
+				id: 'deleteChallengeResponse',
+				success: false,
+				message: err.response.data.message
+			};
+		}
+
+		redirect(308, localizeHref('/challenge'));
 	}
 };

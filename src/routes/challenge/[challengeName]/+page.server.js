@@ -9,6 +9,7 @@ import { redirect } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
 import { fail } from 'assert';
 import axios from 'axios';
+import { goto } from '$app/navigation';
 
 export async function load({ params }) {
 	const window = new JSDOM('').window;
@@ -140,6 +141,27 @@ export const actions = {
 			};
 		}
 	},
+	'comments/delete': async (event) => {
+		const axios = axiosWithCookies(event);
+		const formData = await event.request.formData();
+		const id = formData.get('id');
+		console.log(id);
+
+		try {
+			const response = await axios.delete('/comments', { data: { commentID: id } });
+			return {
+				id: 'deleteComment',
+				success: true,
+				message: response.data.message
+			};
+		} catch (err) {
+			return {
+				id: 'deleteComment',
+				success: false,
+				message: err.response.data.message
+			};
+		}
+	},
 	'challenges/responses': async (event) => {
 		const axios = axiosWithCookies(event);
 
@@ -166,5 +188,26 @@ export const actions = {
 				message: err.response.data.message
 			};
 		}
+	},
+	'challenges/delete': async (event) => {
+		const axios = axiosWithCookies(event);
+
+		const formData = await event.request.formData();
+		const name = formData.get('name');
+
+		try {
+			const response = await axios.delete('/challenges', {
+				data: {
+					name: name
+				}
+			});
+		} catch (err) {
+			return {
+				id: 'challengeDelete',
+				success: false,
+				message: `error while delete challenge: ${err.response.data.message}`
+			};
+		}
+		redirect(308, localizeHref('/challenge'));
 	}
 };

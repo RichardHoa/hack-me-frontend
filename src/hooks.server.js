@@ -2,7 +2,12 @@
 import { sequence } from '@sveltejs/kit/hooks';
 import * as auth from '$lib/server/auth';
 import { paraglideMiddleware } from '$lib/paraglide/server';
-import { ACCESS_TOKEN_NAME, REFRESH_TOKEN_NAME } from '$lib/utils';
+import {
+	ACCESS_TOKEN_NAME,
+	axiosWithCookies,
+	fetchAndSetTokens,
+	REFRESH_TOKEN_NAME
+} from '$lib/utils';
 import { jwtDecode } from 'jwt-decode';
 
 const handleParaglide = ({ event, resolve }) =>
@@ -15,39 +20,49 @@ const handleParaglide = ({ event, resolve }) =>
 	});
 
 const handleAuth = async ({ event, resolve }) => {
-	const accessToken = event.cookies.get(ACCESS_TOKEN_NAME);
-	const refreshToken = event.cookies.get(REFRESH_TOKEN_NAME);
+	// console.log('event cookies before checking');
+	// event.cookies.getAll().map((each) => console.log(each));
 
-	if (!accessToken) {
-		event.locals.user = null;
-		return resolve(event);
+	let accessToken = event.cookies.get(ACCESS_TOKEN_NAME);
+	const refreshToken = event.cookies.get(REFRESH_TOKEN_NAME);
+	event.locals.user = null;
+
+	if (!accessToken && refreshToken) {
+		console.log('fetch new tokens');
+		const axios = axiosWithCookies(event);
+
+		try {
+			const response = await axios.post('/auth/tokens');
+			fetchAndSetTokens(response, event);
+			// get access token after fetching
+			accessToken = event.cookies.get(ACCESS_TOKEN_NAME);
+		} catch (err) {
+			console.error('Token refresh failed:', err.response.data.message);
+			return resolve(event);
+		}
 	}
 
+	// console.log('event cookie after checking');
+	// event.cookies.getAll().map((each) => console.log(each));
 	let payload;
 	try {
 		payload = jwtDecode(accessToken);
 	} catch (err) {
-		// Malformed token
-		event.cookies.delete('ACCESS_TOKEN_NAME');
-		event.locals.user = null;
 		return resolve(event);
 	}
 
 	const now = Math.floor(Date.now() / 1000);
 	const { iat, exp } = payload;
 
-	const MAX_TOKEN_LIFESPAN = 60 * 60 * 24; // 24 hours
+	const timeLeft = exp - now;
 
 	// Validate token claims
 	if (
 		typeof iat !== 'number' ||
 		typeof exp !== 'number' ||
 		iat > now || // issued in future
-		exp <= now || // already expired
-		exp - iat > MAX_TOKEN_LIFESPAN // suspiciously long lifespan
+		exp <= now // already expired
 	) {
-		event.cookies.delete('ACCESS_TOKEN_NAME');
-		event.locals.user = null;
 		return resolve(event);
 	}
 

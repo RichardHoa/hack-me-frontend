@@ -3,7 +3,7 @@
 
 	import Comment from './Comment.svelte';
 	import { CHALLENGE_CATEGORIES, formatDate, formatNow } from '$lib/utils.js';
-	import { ArrowUpFromDot } from 'lucide-svelte';
+	import { ArrowUpFromDot, MoveDiagonal } from 'lucide-svelte';
 	import { marked } from 'marked';
 
 	import { error } from '@sveltejs/kit';
@@ -20,6 +20,20 @@
 	let commentSubmit = $state(false);
 	let formSubmit = $state(false);
 	let formResult = $state(null);
+
+	let dialogRef;
+
+	function openConfirmDialog() {
+		dialogRef.showModal();
+	}
+
+	function handleConfirmDelete() {
+		document.getElementById('delete-challenge-button').click();
+	}
+
+	function handleCancel() {
+		dialogRef.close();
+	}
 </script>
 
 <svelte:head>
@@ -33,15 +47,26 @@
 	<h3>Category: {challenge.category}</h3>
 	<h3>Created: {formatDate(challenge.createdAt)}</h3>
 	<h3>Last Updated: {formatDate(challenge.updatedAt)}</h3>
+
 	<!-- allow challenge edit directly -->
-	{#if data.user.userName === challenge.userName}
+	{#if data.user?.userName === challenge.userName}
 		<button onclick={() => (editMode = !editMode)}
 			>{!editMode ? 'Edit challenge' : 'Exit edit mode'}</button
 		>
+		<button onclick={openConfirmDialog}>Delete the challenge</button>
 	{:else}
 		<button onclick={() => (challengeResponseMode = !challengeResponseMode)}
 			>{!challengeResponseMode ? 'Make a response' : 'Exit the form'}
 		</button>
+	{/if}
+	{#if form?.id === 'challengeDelete'}
+		<div
+			class={form.success ? 'success-message' : 'error-message'}
+			style="text-align: center;"
+			role="alert"
+		>
+			{form.message}
+		</div>
 	{/if}
 </div>
 
@@ -49,6 +74,35 @@
 	<div class="challenge-content">
 		{@html challenge.content}
 	</div>
+
+	<h2 class="heading">Challenge Responses</h2>
+	{#if challengeResponses.length > 0}
+		{#each challengeResponses as res}
+			<a href={localizeHref(`/challenge/response/${res.id}`)}>
+				<div class="challenge-response">
+					<div class="response-meta">
+						<h2 class="response-title">{res.name}</h2>
+						<p class="response-author">By: {res.authorName}</p>
+						<p class="response-time">
+							Created: {formatDate(res.createdAt)}
+						</p>
+					</div>
+
+					<!-- <div class="response-content">
+				{@html res.content}
+			</div> -->
+
+					<div class="response-votes">
+						<span class="vote up">⬆️ {res.upVote}</span>
+						<span class="vote down">⬇️ {res.downVote}</span>
+					</div>
+				</div>
+			</a>
+		{/each}
+	{:else}
+		<p class="no-comments">No challenge responses yet.</p>
+	{/if}
+
 	<h2 class="heading">Comments</h2>
 	<form
 		method="POST"
@@ -79,37 +133,13 @@
 			<div><strong>Please note that comments can only be at most 5 level deep</strong></div>
 			<div class="comments">
 				{#each comments as comment}
-					<Comment {comment} challengeID={challenge.id} />
+					<Comment {comment} challengeID={challenge.id} author={data.user?.userName} />
 				{/each}
 			</div>
 		</details>
 	{:else}
 		<p class="no-comments">No comments yet.</p>
 	{/if}
-
-	<h2 class="heading">Challenge Responses</h2>
-	{#each challengeResponses as res}
-		<a href={localizeHref(`/challenge/response/${res.id}`)}>
-			<div class="challenge-response">
-				<div class="response-meta">
-					<h2 class="response-title">{res.name}</h2>
-					<p class="response-author">By: {res.authorName}</p>
-					<p class="response-time">
-						Created: {formatDate(res.createdAt)}
-					</p>
-				</div>
-
-				<!-- <div class="response-content">
-				{@html res.content}
-			</div> -->
-
-				<div class="response-votes">
-					<span class="vote up">⬆️ {res.upVote}</span>
-					<span class="vote down">⬇️ {res.downVote}</span>
-				</div>
-			</div>
-		</a>
-	{/each}
 {:else if editMode === true}
 	<div class="form-card">
 		<h2>Edit mode</h2>
@@ -121,7 +151,6 @@
 			use:enhance={({ formElement, formData, action, cancel, submitter }) => {
 				formSubmit = true;
 				return async ({ result, update }) => {
-					// await update();
 					formSubmit = false;
 					formResult = result.data;
 
@@ -134,8 +163,10 @@
 					}
 
 					if (formResult.newName === '' && formResult.success === true) {
+						await update();
 						setTimeout(() => {
 							editMode = false;
+							formResult = null;
 						}, 2000);
 					}
 				};
@@ -231,6 +262,36 @@
 	</div>
 {/if}
 
+<dialog bind:this={dialogRef}>
+	<p>Are you sure you want to delete this challenge?</p>
+	<p style="margin-top:10px;margin-bottom:10px;">
+		If successful, you will be redirect to challenges page
+	</p>
+	<form method="dialog">
+		<button onclick={handleConfirmDelete}>{!formSubmit ? 'Yes' : 'Please wait'}</button>
+		<button onclick={handleCancel}>No</button>
+	</form>
+</dialog>
+
+<!-- Hidden Form to Submit -->
+<form
+	id="deleteForm"
+	method="POST"
+	action="?/challenges/delete"
+	style="display: none;"
+	use:enhance={({ formElement, formData, action, cancel, submitter }) => {
+		formSubmit = true;
+
+		return async ({ result, update }) => {
+			await update();
+			formSubmit = false;
+		};
+	}}
+>
+	<input type="hidden" name="name" value={challenge.name} />
+	<button type="submit" id="delete-challenge-button">Delete form</button>
+</form>
+
 <style>
 	a {
 		text-decoration: none;
@@ -256,10 +317,6 @@
 	.response-author,
 	.response-time {
 		font-size: 0.9rem;
-	}
-
-	.response-content {
-		margin: 1rem 0;
 	}
 
 	.response-votes {

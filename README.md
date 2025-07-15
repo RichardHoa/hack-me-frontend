@@ -1,7 +1,9 @@
 # TODO
 
-- delete challenge, challenge response
-- delete comment, modify comment
+[x] refresh rotation when necessary
+[x] delete challenge, challenge response
+[x] delete comment
+- modify comment
 - upvote, downvote challenge
 
 # sv
