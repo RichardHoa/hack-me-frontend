@@ -1,7 +1,6 @@
 <script>
 	// @ts-nocheck
 
-	import Comment from './Comment.svelte';
 	import { CHALLENGE_CATEGORIES, formatDate, formatNow } from '$lib/utils.js';
 	import { ArrowUpFromDot, MoveDiagonal } from 'lucide-svelte';
 	import { marked } from 'marked';
@@ -10,11 +9,13 @@
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import { localizeHref } from '$lib/paraglide/runtime';
+	import Comment from '$lib/components/Comment/Comment.svelte';
 	let { data, form } = $props();
 	let challenge = $derived(data.challenge);
 	let comments = $derived(data.challenge.comments);
 	let challengeResponses = $derived(data.challengeResponses);
 
+	let selectedVoteType = $state('');
 	let editMode = $state(false);
 	let challengeResponseMode = $state(false);
 	let commentSubmit = $state(false);
@@ -48,7 +49,6 @@
 	<h3>Created: {formatDate(challenge.createdAt)}</h3>
 	<h3>Last Updated: {formatDate(challenge.updatedAt)}</h3>
 
-	<!-- allow challenge edit directly -->
 	{#if data.user?.userName === challenge.userName}
 		<button onclick={() => (editMode = !editMode)}
 			>{!editMode ? 'Edit challenge' : 'Exit edit mode'}</button
@@ -56,9 +56,10 @@
 		<button onclick={openConfirmDialog}>Delete the challenge</button>
 	{:else}
 		<button onclick={() => (challengeResponseMode = !challengeResponseMode)}
-			>{!challengeResponseMode ? 'Make a response' : 'Exit the form'}
+			>{!challengeResponseMode ? 'Make a  challenge response' : 'Exit the form'}
 		</button>
 	{/if}
+
 	{#if form?.id === 'challengeDelete'}
 		<div
 			class={form.success ? 'success-message' : 'error-message'}
@@ -78,8 +79,8 @@
 	<h2 class="heading">Challenge Responses</h2>
 	{#if challengeResponses.length > 0}
 		{#each challengeResponses as res}
-			<a href={localizeHref(`/challenge/response/${res.id}`)}>
-				<div class="challenge-response">
+			<div class="challenge-response">
+				<a href={localizeHref(`/challenge/response/${res.id}`)}>
 					<div class="response-meta">
 						<h2 class="response-title">{res.name}</h2>
 						<p class="response-author">By: {res.authorName}</p>
@@ -87,17 +88,42 @@
 							Created: {formatDate(res.createdAt)}
 						</p>
 					</div>
+				</a>
 
-					<!-- <div class="response-content">
+				<!-- <div class="response-content">
 				{@html res.content}
 			</div> -->
 
+				<form
+					id="voteForm"
+					method="POST"
+					action="?/challenges/responses/votes"
+					use:enhance={({ formElement, formData, action, cancel, submitter }) => {
+						selectedVoteType = formData.get('voteType');
+						return async ({ result, update }) => {
+							await update();
+						};
+					}}
+				>
+					<input type="hidden" name="challengeResponseID" value={res.id} />
+
 					<div class="response-votes">
-						<span class="vote up">⬆️ {res.upVote}</span>
-						<span class="vote down">⬇️ {res.downVote}</span>
+						<button type="submit" name="voteType" value="upVote" class="vote up">
+							⬆️ {res.upVote}
+						</button>
+
+						<button type="submit" name="voteType" value="downVote" class="vote down">
+							⬇️
+							{res.downVote}
+						</button>
 					</div>
-				</div>
-			</a>
+					{#if form?.id === 'postVote'}
+						{#if form.success === false}
+							<p class="error-message" role="alert">{form.message}</p>
+						{/if}
+					{/if}
+				</form>
+			</div>
 		{/each}
 	{:else}
 		<p class="no-comments">No challenge responses yet.</p>
@@ -117,7 +143,7 @@
 	>
 		<label>
 			Make a comment
-			<input type="text" name="content" />
+			<input type="text" name="content" required />
 		</label>
 		<input type="hidden" name="challengeID" value={challenge.id} />
 		<button type="submit">{!commentSubmit ? 'Comment' : 'Please wait'}</button>

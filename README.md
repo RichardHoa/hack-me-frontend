@@ -1,10 +1,8 @@
 # TODO
 
-[x] refresh rotation when necessary
-[x] delete challenge, challenge response
-[x] delete comment
-- modify comment
-- upvote, downvote challenge
+[] check overall accessibility site, check the guide 
+[] check the issue with challenge page and challenge response page, add visually hidden content, find solution to the h1 page and h1 content
+[] add comment to important function, clean the code
 
 # sv
 

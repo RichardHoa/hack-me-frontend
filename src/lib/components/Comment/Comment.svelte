@@ -3,33 +3,65 @@
 
 	import { marked } from 'marked';
 	import { formatDate } from '$lib/utils.js';
-	import Comment from './Comment.svelte';
 	import DOMPurify from 'dompurify';
 	import { enhance } from '$app/forms';
+	import Comment from '$lib/components/Comment/Comment.svelte';
 	let { comment, author, challengeID = null, challengeResponseID = null } = $props();
 
 	let replyContent = $state('');
 	let showReply = $state(false);
+	let editMode = $state(false);
 	let formResult = $state('');
+
 	function handleDeleteComment() {
 		document.getElementById(`delete-comment-${comment.id}`).click();
+	}
+
+	function handleModifyComment() {
+		document.getElementById(`modify-comment-${comment.id}`).click();
 	}
 </script>
 
 <div class="comment">
 	<div class="comment-meta">
 		<strong>{comment.author}</strong> • {formatDate(comment.createdAt)}
+		{comment.createdAt !== comment.updatedAt ? `• Edited at ${formatDate(comment.updatedAt)}` : ''}
 	</div>
-	<div class="comment-content">
-		{@html comment.content}
-	</div>
+
+	{#if editMode}
+		<form
+			method="POST"
+			action="?/comments/modify"
+			class="reply-form"
+			use:enhance={({ formElement, formData, action, cancel, submitter }) => {
+				return async ({ result, update }) => {
+					formResult = result.data;
+					await update();
+					if (result.data.success === true) {
+						editMode = false;
+					}
+				};
+			}}
+		>
+			<input type="hidden" value={comment.id} name="commentID" />
+			<textarea rows="3" required name="content" defaultValue={comment.content}></textarea>
+			<button type="submit" id={`modify-comment-${comment.id}`} onclick={handleModifyComment}
+				>Edit Reply</button
+			>
+		</form>
+	{:else}
+		<div class="comment-content">
+			{comment.content}
+		</div>
+	{/if}
 
 	{#if author}
 		{#if comment.author === author}
-			<button>Edit comment</button>
+			<button onclick={() => (editMode = !editMode)}>Edit comment</button>
 		{/if}
+
+		<button onclick={handleDeleteComment}>Delete comment</button>
 	{/if}
-	<button onclick={handleDeleteComment}>Delete comment</button>
 	<!-- Reply button -->
 	<button onclick={() => (showReply = !showReply)}>
 		{showReply ? 'Cancel' : 'Reply'}

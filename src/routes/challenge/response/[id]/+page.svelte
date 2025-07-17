@@ -7,7 +7,7 @@
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import { localizeHref } from '$lib/paraglide/runtime';
-	import Comment from '../../[challengeName]/Comment.svelte';
+	import Comment from '$lib/components/Comment/Comment.svelte';
 	let { data, form } = $props();
 	let challengeResponse = $derived(data.challengeResponse);
 	let comments = $derived(data.challengeResponse.comments);
@@ -89,15 +89,16 @@
 		{/if}
 	{/if}
 	{#if comments?.length > 0}
-		<details>
-			<summary>Comments</summary>
-			<div><strong>Please note that comments can only be at most 5 level deep</strong></div>
-			<div class="comments">
-				{#each comments as comment}
-					<Comment {comment} challengeResponseID={challengeResponse.id} />
-				{/each}
-			</div>
-		</details>
+		<div><strong>Please note that comments can only be at most 5 level deep</strong></div>
+		<div class="comments">
+			{#each comments as comment}
+				<Comment
+					{comment}
+					challengeResponseID={challengeResponse.id}
+					author={data.user?.userName}
+				/>
+			{/each}
+		</div>
 	{:else}
 		<p class="no-comments">No comments yet.</p>
 	{/if}

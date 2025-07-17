@@ -10,6 +10,7 @@ import { error } from '@sveltejs/kit';
 import { fail } from 'assert';
 import axios from 'axios';
 import { goto } from '$app/navigation';
+import { CommentAPI } from '$lib/components/Comment/Comment';
 
 export async function load({ params }) {
 	const window = new JSDOM('').window;
@@ -93,74 +94,26 @@ export const actions = {
 			};
 		}
 	},
-	comments: async (event) => {
+	'challenges/delete': async (event) => {
 		const axios = axiosWithCookies(event);
-		const formData = await event.request.formData();
-		const content = formData.get('content');
-		const challengeID = formData.get('challengeID');
 
-		const data = { content: content, challengeID: challengeID };
+		const formData = await event.request.formData();
+		const name = formData.get('name');
 
 		try {
-			const response = await axios.post('/comments', data);
-
-			return {
-				id: 'comment',
-				success: true,
-				message: response.data.message
-			};
+			const response = await axios.delete('/challenges', {
+				data: {
+					name: name
+				}
+			});
 		} catch (err) {
 			return {
-				id: 'comment',
+				id: 'challengeDelete',
 				success: false,
-				message: err.response.data.message
+				message: `error while delete challenge: ${err.response.data.message}`
 			};
 		}
-	},
-	'comments/reply': async (event) => {
-		const axios = axiosWithCookies(event);
-		const formData = await event.request.formData();
-		const content = formData.get('content');
-		const parentID = formData.get('parentID');
-		const challengeID = formData.get('challengeID');
-
-		const data = { content: content, parentID: parentID, challengeID: challengeID };
-
-		try {
-			const response = await axios.post('/comments', data);
-			return {
-				id: 'replyComment',
-				success: true,
-				message: response.data.message
-			};
-		} catch (err) {
-			return {
-				id: 'replyComment',
-				success: false,
-				message: err.response.data.message
-			};
-		}
-	},
-	'comments/delete': async (event) => {
-		const axios = axiosWithCookies(event);
-		const formData = await event.request.formData();
-		const id = formData.get('id');
-		console.log(id);
-
-		try {
-			const response = await axios.delete('/comments', { data: { commentID: id } });
-			return {
-				id: 'deleteComment',
-				success: true,
-				message: response.data.message
-			};
-		} catch (err) {
-			return {
-				id: 'deleteComment',
-				success: false,
-				message: err.response.data.message
-			};
-		}
+		redirect(308, localizeHref('/challenge'));
 	},
 	'challenges/responses': async (event) => {
 		const axios = axiosWithCookies(event);
@@ -183,31 +136,45 @@ export const actions = {
 				challengeResponseData: response.data.data
 			};
 		} catch (err) {
+			let message = err.response.data.message;
+			if (err.response.status === 401) {
+				message = 'You must login to make challenge response';
+			}
+
 			return {
 				success: false,
-				message: err.response.data.message
+				message: message
 			};
 		}
 	},
-	'challenges/delete': async (event) => {
+	'challenges/responses/votes': async (event) => {
 		const axios = axiosWithCookies(event);
 
 		const formData = await event.request.formData();
-		const name = formData.get('name');
+		const id = formData.get('challengeResponseID');
+		const voteType = formData.get('voteType');
 
 		try {
-			const response = await axios.delete('/challenges', {
-				data: {
-					name: name
-				}
+			const response = await axios.post('/challenges/responses/votes', {
+				challengeResponseID: id,
+				voteType: voteType
 			});
+
+			return {
+				id: 'postVote',
+				success: true,
+				message: response.data.message
+			};
 		} catch (err) {
 			return {
-				id: 'challengeDelete',
+				id: 'postVote',
 				success: false,
-				message: `error while delete challenge: ${err.response.data.message}`
+				message: `Error while post new vote: ${err.response.data.message}`
 			};
 		}
-		redirect(308, localizeHref('/challenge'));
-	}
+	},
+	comments: CommentAPI.newChallenge,
+	'comments/reply': CommentAPI.replyChallenge,
+	'comments/delete': CommentAPI.delete,
+	'comments/modify': CommentAPI.modify
 };

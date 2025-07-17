@@ -9,6 +9,7 @@ import { redirect } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
 import { fail } from 'assert';
 import axios from 'axios';
+import { CommentAPI } from '$lib/components/Comment/Comment';
 
 export async function load({ params }) {
 	const window = new JSDOM('').window;
@@ -49,54 +50,6 @@ export async function load({ params }) {
 }
 
 export const actions = {
-	comments: async (event) => {
-		const axios = axiosWithCookies(event);
-		const formData = await event.request.formData();
-		const content = formData.get('content');
-		const challengeResponseID = formData.get('challengeResponseID');
-
-		const data = { content: content, challengeResponseID: challengeResponseID };
-
-		try {
-			const response = await axios.post('/comments', data);
-
-			return {
-				id: 'comment',
-				success: true,
-				message: response.data.message
-			};
-		} catch (err) {
-			return {
-				id: 'comment',
-				success: false,
-				message: err.response.data.message
-			};
-		}
-	},
-	'comments/reply': async (event) => {
-		const axios = axiosWithCookies(event);
-		const formData = await event.request.formData();
-		const content = formData.get('content');
-		const parentID = formData.get('parentID');
-		const challengeResponseID = formData.get('challengeResponseID');
-
-		const data = { content: content, parentID: parentID, challengeResponseID: challengeResponseID };
-
-		try {
-			const response = await axios.post('/comments', data);
-			return {
-				id: 'replyComment',
-				success: true,
-				message: response.data.message
-			};
-		} catch (err) {
-			return {
-				id: 'replyComment',
-				success: false,
-				message: err.response.data.message
-			};
-		}
-	},
 	'challenges/response': async (event) => {
 		const axios = axiosWithCookies(event);
 
@@ -148,5 +101,9 @@ export const actions = {
 		}
 
 		redirect(308, localizeHref('/challenge'));
-	}
+	},
+	comments: CommentAPI.newChallengeResponse,
+	'comments/reply': CommentAPI.replyChallengeResponse,
+	'comments/delete': CommentAPI.delete,
+	'comments/modify': CommentAPI.modify
 };

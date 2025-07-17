@@ -144,12 +144,7 @@
 	<div in:fade out:fade>
 		{#each filteredChallenges as c}
 			{#key c.name}
-				<a
-					target="_blank"
-					rel="noreferrer noopenner"
-					href={localizeHref(`/challenge/${encodeURIComponent(c.name)}`)}
-					class="challenge-link"
-				>
+				<a href={localizeHref(`/challenge/${encodeURIComponent(c.name)}`)} class="challenge-link">
 					<div class="challenge-box">
 						<h2>{c.name}</h2>
 						<h3>{m.inner_day_rooster_offer()}: {c.userName}</h3>
