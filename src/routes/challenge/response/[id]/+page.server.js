@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { localizeHref } from '$lib/paraglide/runtime.js';
-import { axiosWithCookies } from '$lib/utils';
+import { axiosWithCookies, lowerHeaderRenderer, requireLogin } from '$lib/utils';
 import { JSDOM } from 'jsdom';
 import DOMPurify from 'dompurify';
 import { marked } from 'marked';
@@ -12,8 +12,11 @@ import axios from 'axios';
 import { CommentAPI } from '$lib/components/Comment/Comment';
 
 export async function load({ params }) {
+	marked.use({ renderer: lowerHeaderRenderer });
 	const window = new JSDOM('').window;
 	const purify = DOMPurify(window);
+
+	const user = requireLogin();
 	try {
 		const challengeResult = await axios.get(
 			`/challenges/responses?challengeResponseID=${params.id}`
@@ -30,7 +33,8 @@ export async function load({ params }) {
 
 		return {
 			challengeResponse: challengeResponse,
-			rawContent: rawContent
+			rawContent: rawContent,
+			user: user
 		};
 	} catch (err) {
 		console.error('Load error:', err);

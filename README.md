@@ -1,8 +1,6 @@
 # TODO
-
-[] check overall accessibility site, check the guide 
-[] check the issue with challenge page and challenge response page, add visually hidden content, find solution to the h1 page and h1 content
-[] add comment to important function, clean the code
+- [ ] check overall accessibility site, check the guide 
+- [x] check the issue with challenge page and challenge response page, add visually hidden content, find solution to the h1 page and h1 content
 
 # sv
 

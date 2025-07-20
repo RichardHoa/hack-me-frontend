@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { localizeHref } from '$lib/paraglide/runtime.js';
-import { axiosWithCookies } from '$lib/utils';
+import { axiosWithCookies, lowerHeaderRenderer } from '$lib/utils';
 import { JSDOM } from 'jsdom';
 import DOMPurify from 'dompurify';
 import { marked } from 'marked';
@@ -13,6 +13,7 @@ import { goto } from '$app/navigation';
 import { CommentAPI } from '$lib/components/Comment/Comment';
 
 export async function load({ params }) {
+	marked.use({ renderer: lowerHeaderRenderer });
 	const window = new JSDOM('').window;
 	const purify = DOMPurify(window);
 	try {

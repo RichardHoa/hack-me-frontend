@@ -27,6 +27,10 @@ const handleAuth = async ({ event, resolve }) => {
 	const refreshToken = event.cookies.get(REFRESH_TOKEN_NAME);
 	event.locals.user = null;
 
+	if (!accessToken && !refreshToken) {
+		return resolve(event);
+	}
+
 	if (!accessToken && refreshToken) {
 		console.log('fetch new tokens');
 		const axios = axiosWithCookies(event);

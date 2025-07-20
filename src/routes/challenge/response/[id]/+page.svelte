@@ -34,14 +34,16 @@
 	<title>HACKME: challenge response</title>
 </svelte:head>
 
-<h1 class="challenge-title">{challengeResponse.name}</h1>
+<h1 class="challenge-title">
+	<span class="visually-hidden">Challenge response name: </span>{challengeResponse.name}
+</h1>
 
 <div class="challenge-meta">
-	<h3>Author: {challengeResponse.authorName}</h3>
-	<h3>Up vote: {challengeResponse.upVote}</h3>
-	<h3>Down vote: {challengeResponse.downVote}</h3>
-	<h3>Created: {formatDate(challengeResponse.createdAt)}</h3>
-	<h3>Last Updated: {formatDate(challengeResponse.updatedAt)}</h3>
+	<div>Author: {challengeResponse.authorName}</div>
+	<div>Up vote: {challengeResponse.upVote}</div>
+	<div>Down vote: {challengeResponse.downVote}</div>
+	<div>Created: {formatDate(challengeResponse.createdAt)}</div>
+	<div>Last Updated: {formatDate(challengeResponse.updatedAt)}</div>
 	<!-- allow challenge edit directly -->
 	{#if data.user?.userName === challengeResponse.authorName}
 		<button onclick={() => (editMode = !editMode)}
@@ -61,6 +63,7 @@
 </div>
 
 {#if editMode === false}
+	<h2>Challenge response detail</h2>
 	<div class="challenge-content">
 		{@html challengeResponse.content}
 	</div>
@@ -222,8 +225,23 @@
 		border-radius: 6px;
 	}
 
-	:global(.challenge-content h1) {
+	:global(.challenge-content h2) {
 		font-size: 2rem;
+	}
+	:global(.challenge-content h3) {
+		font-size: 1.7rem;
+	}
+
+	:global(.challenge-content h4) {
+		font-size: 1.5rem;
+	}
+
+	:global(.challenge-content h5) {
+		font-size: 1.3rem;
+	}
+
+	:global(.challenge-content h6) {
+		font-size: 1.1rem;
 	}
 
 	:global(.challenge-content img) {
