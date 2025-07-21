@@ -4,7 +4,6 @@
 	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';
 	import { CHALLENGE_CATEGORIES } from '$lib/utils.js';
-
 	let { form, data } = $props();
 
 	let formSubmit = $state(false);
@@ -46,7 +45,14 @@
 
 			<label for="content">Content</label>
 			<small id="content-helper">The content can be displayed in Markdown</small>
-			<textarea id="content" name="content" rows="20" required aria-describedby="content-helper"
+			<textarea
+				id="content"
+				name="content"
+				rows="20"
+				required
+				aria-describedby="content-helper"
+				spellcheck="false"
+				autocorrect="off"
 			></textarea>
 			<button type="submit" class="submit-button" disabled={formSubmit}
 				>{formSubmit ? 'Please wait' : 'New challenge'}</button

@@ -8,7 +8,6 @@
 	import Comment from '$lib/components/Comment/Comment.svelte';
 	let { comment, author, challengeID = null, challengeResponseID = null } = $props();
 
-	let replyContent = $state('');
 	let showReply = $state(false);
 	let editMode = $state(false);
 	let formResult = $state('');
@@ -44,7 +43,14 @@
 			}}
 		>
 			<input type="hidden" value={comment.id} name="commentID" />
-			<textarea rows="3" required name="content" defaultValue={comment.content}></textarea>
+			<textarea
+				rows="3"
+				required
+				name="content"
+				defaultValue={comment.content}
+				autocorrect="off"
+				spellcheck="false"
+			></textarea>
 			<button type="submit" id={`modify-comment-${comment.id}`} onclick={handleModifyComment}
 				>Edit Reply</button
 			>
@@ -62,7 +68,7 @@
 
 		<button onclick={handleDeleteComment}>Delete comment</button>
 	{/if}
-	<!-- Reply button -->
+
 	<button onclick={() => (showReply = !showReply)}>
 		{showReply ? 'Cancel' : 'Reply'}
 	</button>
@@ -107,6 +113,7 @@
 		</details>
 	{/if}
 
+	<!-- Hidden form to delete comment -->
 	<form
 		method="POST"
 		action="?/comments/delete"

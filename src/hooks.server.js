@@ -41,7 +41,7 @@ const handleAuth = async ({ event, resolve }) => {
 			// get access token after fetching
 			accessToken = event.cookies.get(ACCESS_TOKEN_NAME);
 		} catch (err) {
-			console.error('Token refresh failed:', err.response.data.message);
+			console.error('Token refresh failed:', err.response);
 			return resolve(event);
 		}
 	}

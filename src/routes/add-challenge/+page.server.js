@@ -26,9 +26,9 @@ export const actions = {
 				message: response.data.message
 			};
 		} catch (err) {
-			return fail(err.response.status, {
+			return fail(err.response?.status || 500, {
 				success: false,
-				message: err.response.data.message
+				message: err.response?.data?.message || SERVER_ERROR_MESSAGE
 			});
 		}
 	}

@@ -1,11 +1,17 @@
 // src/routes/account/+page.server.js
 import { localizeHref } from '$lib/paraglide/runtime';
-import { axiosWithCookies, fetchAndSetTokens, requireLogin } from '$lib/utils';
-import { fail, redirect } from '@sveltejs/kit';
+import {
+	axiosWithCookies,
+	fetchAndSetTokens,
+	requireLogin,
+	SERVER_ERROR_MESSAGE
+} from '$lib/utils';
+import { error, fail, redirect } from '@sveltejs/kit';
 
 export async function load(event) {
 	const user = requireLogin();
 
+	// no auth cookie is present case
 	if (!user) {
 		redirect(307, localizeHref('/login'));
 	}
@@ -19,14 +25,13 @@ export async function load(event) {
 			userData: response.data.data
 		};
 	} catch (err) {
-		// Handle cases where the user is not found or other errors
-		if (err.response && err.response.status === 404) {
-			redirect(307, localizeHref('/login'));
+		console.error(err);
+
+		if (err?.status && err?.response.data) {
+			throw error(err.status, err.response.data.message);
 		}
-		// For other errors, you might want to show an error page
-		// or log the error and redirect.
-		console.error('Failed to load user data:', err);
-		redirect(307, localizeHref('/'));
+
+		throw error(500, SERVER_ERROR_MESSAGE);
 	}
 }
 
@@ -38,10 +43,10 @@ export const actions = {
 			const response = await axios.post('/users/logout');
 			fetchAndSetTokens(response, event);
 		} catch (err) {
-			return fail(err.response.status, {
+			return fail(err.response?.status || 500, {
 				id: 'logout',
 				success: false,
-				message: err.response.data.message
+				message: err.response?.data?.message || SERVER_ERROR_MESSAGE
 			});
 		}
 
@@ -64,10 +69,10 @@ export const actions = {
 				message: response.data.message
 			};
 		} catch (err) {
-			return fail(err.response.status, {
+			return fail(err.response?.status || 500, {
 				id: 'changePassword',
 				success: false,
-				message: err.response.data.message
+				message: err.response?.data?.message || SERVER_ERROR_MESSAGE
 			});
 		}
 	},
@@ -81,6 +86,7 @@ export const actions = {
 				newUsername
 			});
 
+			// because the refresh token contains user name, we must fetch new ones
 			const refreshTokenResponse = await axios.post('/auth/tokens');
 			fetchAndSetTokens(refreshTokenResponse, event);
 
@@ -90,25 +96,23 @@ export const actions = {
 				message: response.data.message
 			};
 		} catch (err) {
-			return fail(err.response.status, {
+			return fail(err.response?.status || 500, {
 				id: 'changeUsername',
 				success: false,
-				message: err.response.data.message
+				message: err.response?.data?.message || SERVER_ERROR_MESSAGE
 			});
 		}
 	},
 	deleteAccount: async (event) => {
 		const axios = axiosWithCookies(event);
 		try {
-			const response = await axios.delete('/users');
-			// After deleting the account, you'll want to log the user out
-			// and redirect them.
+			const response = await axios.delete('/users/me');
 			fetchAndSetTokens(response, event);
 		} catch (err) {
-			return fail(err.response.status, {
+			return fail(err.response?.status || 500, {
 				id: 'deleteAccount',
 				success: false,
-				message: err.response.data.message
+				message: err.response?.data?.message || SERVER_ERROR_MESSAGE
 			});
 		}
 		redirect(307, localizeHref('/'));

@@ -1,13 +1,15 @@
 // @ts-nocheck
 import { localizeHref } from '$lib/paraglide/runtime.js';
-import { axiosWithCookies, lowerHeaderRenderer, requireLogin } from '$lib/utils';
+import {
+	axiosWithCookies,
+	lowerHeaderRenderer,
+	requireLogin,
+	SERVER_ERROR_MESSAGE
+} from '$lib/utils';
 import { JSDOM } from 'jsdom';
 import DOMPurify from 'dompurify';
 import { marked } from 'marked';
-
-import { redirect } from '@sveltejs/kit';
-import { error } from '@sveltejs/kit';
-import { fail } from 'assert';
+import { error, fail, redirect } from '@sveltejs/kit';
 import axios from 'axios';
 import { CommentAPI } from '$lib/components/Comment/Comment';
 
@@ -37,19 +39,13 @@ export async function load({ params }) {
 			user: user
 		};
 	} catch (err) {
-		console.error('Load error:', err);
+		console.error(err.response);
 
-		if (err?.status && err?.body) {
-			throw error(err.status, err.body.message ?? err.body);
+		if (err.status && err.response?.data) {
+			throw error(err.status, err.response.data.message);
 		}
 
-		if (axios.isAxiosError(err) && err.response) {
-			const status = err.response.status || 500;
-			const message = err.response.data?.message || 'Unexpected server error';
-			throw error(status, message);
-		}
-
-		throw error(500, 'Failed to connect to backend. Please try again later.');
+		throw error(500, SERVER_ERROR_MESSAGE);
 	}
 }
 
@@ -75,12 +71,13 @@ export const actions = {
 				message: response.data.message
 			};
 		} catch (err) {
-			console.error(err.response.data);
-			return {
+			console.error(err.response);
+
+			return fail(err.response?.status || 500, {
 				id: 'challengeResponse',
 				success: false,
-				message: err.response.data.message
-			};
+				message: err.response?.data?.message || SERVER_ERROR_MESSAGE
+			});
 		}
 	},
 	'challenges/response/delete': async (event) => {
@@ -96,12 +93,11 @@ export const actions = {
 				}
 			});
 		} catch (err) {
-			console.error(err.response.data);
-			return {
+			return fail(err.response?.status || 500, {
 				id: 'deleteChallengeResponse',
 				success: false,
-				message: err.response.data.message
-			};
+				message: err.response?.data?.message || SERVER_ERROR_MESSAGE
+			});
 		}
 
 		redirect(308, localizeHref('/challenge'));

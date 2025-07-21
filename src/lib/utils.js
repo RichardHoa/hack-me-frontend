@@ -5,6 +5,11 @@ import { getRequestEvent } from '$app/server';
 import { jwtDecode } from 'jwt-decode';
 import { marked } from 'marked';
 
+/**
+ * Formats a date string into a more readable 'DD/MM/YYYY, HH:MM' format.
+ * @param {string} dateStr - The ISO date string to format.
+ * @returns {string} The formatted date string.
+ */
 export function formatDate(dateStr) {
 	const date = new Date(dateStr);
 	return date.toLocaleString('en-GB', {
@@ -17,28 +22,11 @@ export function formatDate(dateStr) {
 	});
 }
 
-export function formatNow() {
-	const date = new Date();
-
-	const pad = (num, size = 2) => String(num).padStart(size, '0');
-
-	const year = date.getFullYear();
-	const month = pad(date.getMonth() + 1);
-	const day = pad(date.getDate());
-	const hour = pad(date.getHours());
-	const minute = pad(date.getMinutes());
-	const second = pad(date.getSeconds());
-
-	const ms = pad(date.getMilliseconds(), 6);
-
-	const tzOffsetMin = date.getTimezoneOffset();
-	const sign = tzOffsetMin <= 0 ? '+' : '-';
-	const tzHours = pad(Math.floor(Math.abs(tzOffsetMin) / 60));
-	const tzMinutes = pad(Math.abs(tzOffsetMin) % 60);
-
-	return `${year}-${month}-${day}T${hour}:${minute}:${second}.${ms}${sign}${tzHours}:${tzMinutes}`;
-}
-
+/**
+ * Retrieves the current user from the request event locals.
+ * This is a server-side utility.
+ * @returns {object | undefined} The user object if it exists, otherwise undefined.
+ */
 export function requireLogin() {
 	const { locals } = getRequestEvent();
 
@@ -49,6 +37,12 @@ export function requireLogin() {
 	return locals.user;
 }
 
+/**
+ * A custom renderer for the 'marked' library to demote heading levels.
+ * It transforms `<h1>` into `<h2>`, `<h2>` into `<h3>`, and so on, to maintain
+ * proper document structure and accessibility when rendering user-generated Markdown.
+ * @type {MarkedRenderer}
+ */
 export const lowerHeaderRenderer = {
 	heading({ tokens, depth }) {
 		const text = this.parser.parseInline(tokens);
@@ -59,10 +53,16 @@ export const lowerHeaderRenderer = {
 	}
 };
 
-// axios default setting
+// --- Axios Global Configuration ---
 axios.defaults.baseURL = `${env.PUBLIC_API_DOMAIN}/${env.PUBLIC_API_VERSION}`;
 axios.defaults.withCredentials = true;
 
+/**
+ * Parses 'set-cookie' headers from an Axios response and sets them on the SvelteKit event cookies.
+ * It decodes JWTs to set appropriate `maxAge` values.
+ * @param {import('axios').AxiosResponse} response - The Axios response object.
+ * @param {import('@sveltejs/kit').RequestEvent} event - The SvelteKit request event object.
+ */
 export function fetchAndSetTokens(response, event) {
 	const setCookie = response.headers['set-cookie'];
 
@@ -114,6 +114,12 @@ export function fetchAndSetTokens(response, event) {
 	}
 }
 
+/**
+ * Creates a new Axios instance with credentials (cookies and CSRF token)
+ * attached from the current SvelteKit request event.
+ * @param {import('@sveltejs/kit').RequestEvent} event - The SvelteKit request event object.
+ * @returns {import('axios').AxiosInstance} A configured Axios instance.
+ */
 export function axiosWithCookies(event) {
 	const accessToken = event.cookies.get('accessToken');
 	const refreshToken = event.cookies.get('refreshToken');
@@ -133,10 +139,11 @@ export function axiosWithCookies(event) {
 	});
 }
 
-// constants naming
+// --- Constants ---
 export const DEFAULT_PAGE_SIZE = 5;
 export const ACCESS_TOKEN_NAME = 'accessToken';
 export const REFRESH_TOKEN_NAME = 'refreshToken';
+export const SERVER_ERROR_MESSAGE = 'Server is down, please come back 5 minutes later';
 export const CHALLENGE_CATEGORIES = [
 	'web hacking',
 	'embedded hacking',

@@ -1,13 +1,11 @@
 // @ts-nocheck
 import { localizeHref } from '$lib/paraglide/runtime.js';
-import { axiosWithCookies, lowerHeaderRenderer } from '$lib/utils';
+import { axiosWithCookies, lowerHeaderRenderer, SERVER_ERROR_MESSAGE } from '$lib/utils';
 import { JSDOM } from 'jsdom';
 import DOMPurify from 'dompurify';
 import { marked } from 'marked';
 
-import { redirect } from '@sveltejs/kit';
-import { error } from '@sveltejs/kit';
-import { fail } from 'assert';
+import { error, fail, redirect } from '@sveltejs/kit';
 import axios from 'axios';
 import { goto } from '$app/navigation';
 import { CommentAPI } from '$lib/components/Comment/Comment';
@@ -26,11 +24,12 @@ export async function load({ params }) {
 		}
 
 		const challengeID = response.data.data[0].id;
-		const challengeResult = await axios.get(`/challenges/responses?challengeID=${challengeID}`);
-		const challengeResponses = challengeResult.data.data;
+		const responseResult = await axios.get(`/challenges/responses?challengeID=${challengeID}`);
+		const challengeResponses = responseResult.data.data;
 
+		// set to null as we do not need challenge response content
 		for (let i = 0; i < challengeResponses.length; i++) {
-			challengeResponses[i].content = purify.sanitize(marked.parse(challengeResponses[i].content));
+			challengeResponses[i].content = null;
 		}
 
 		const rawChallengeContent = challenge.content;
@@ -42,19 +41,13 @@ export async function load({ params }) {
 			challengeResponses: challengeResponses
 		};
 	} catch (err) {
-		console.error('Load error:', err);
+		console.error(err.response);
 
-		if (err?.status && err?.body) {
-			throw error(err.status, err.body.message ?? err.body);
+		if (err.status && err.response?.data) {
+			throw error(err.status, err.response.data.message);
 		}
 
-		if (axios.isAxiosError(err) && err.response) {
-			const status = err.response.status || 500;
-			const message = err.response.data?.message || 'Unexpected server error';
-			throw error(status, message);
-		}
-
-		throw error(500, 'Failed to connect to backend. Please try again later.');
+		throw error(500, SERVER_ERROR_MESSAGE);
 	}
 }
 
@@ -89,10 +82,10 @@ export const actions = {
 				newName: newName
 			};
 		} catch (err) {
-			return {
+			return fail(err.response?.status || 500, {
 				success: false,
-				message: err.response.data.message
-			};
+				message: err.response?.data?.message || SERVER_ERROR_MESSAGE
+			});
 		}
 	},
 	'challenges/delete': async (event) => {
@@ -108,11 +101,11 @@ export const actions = {
 				}
 			});
 		} catch (err) {
-			return {
+			return fail(err.response?.status || 500, {
 				id: 'challengeDelete',
 				success: false,
-				message: `error while delete challenge: ${err.response.data.message}`
-			};
+				message: err.response?.data?.message || SERVER_ERROR_MESSAGE
+			});
 		}
 		redirect(308, localizeHref('/challenge'));
 	},
@@ -137,15 +130,17 @@ export const actions = {
 				challengeResponseData: response.data.data
 			};
 		} catch (err) {
-			let message = err.response.data.message;
-			if (err.response.status === 401) {
-				message = 'You must login to make challenge response';
+			let errObject = {
+				id: 'challengeDelete',
+				success: false,
+				message: err.response?.data?.message || SERVER_ERROR_MESSAGE
+			};
+
+			if (err.response?.status === 401) {
+				errObject.message = 'You must login to make challenge response';
 			}
 
-			return {
-				success: false,
-				message: message
-			};
+			return fail(err.response?.status || 500, errObject);
 		}
 	},
 	'challenges/responses/votes': async (event) => {
@@ -167,11 +162,17 @@ export const actions = {
 				message: response.data.message
 			};
 		} catch (err) {
-			return {
+			let errObject = {
 				id: 'postVote',
 				success: false,
-				message: `Error while post new vote: ${err.response.data.message}`
+				message: err.response?.data?.message || SERVER_ERROR_MESSAGE
 			};
+
+			if (err.response?.status === 401) {
+				errObject.message = 'You must login to vote';
+			}
+
+			return fail(err.response?.status || 500, errObject);
 		}
 	},
 	comments: CommentAPI.newChallenge,

@@ -64,7 +64,7 @@
 	</form>
 
 	{#if form}
-		{#if form.loginSuccess == false}
+		{#if form?.id === 'login'}
 			<p class="error-message" role="alert">{form.loginMessage}</p>
 		{:else}
 			<p class="success-message">{form.loginMessage}</p>
@@ -118,9 +118,8 @@
 		>
 	</form>
 
-	<!-- Error Message for Registration (if applicable) -->
 	{#if form}
-		{#if form.registrationSuccess == false}
+		{#if form?.id === 'registration'}
 			<p class="error-message" role="alert">{form.registrationMessage}</p>
 		{:else}
 			<p class="success-message">{form.registrationMessage}</p>
@@ -139,25 +138,25 @@
 	}
 
 	h1 {
-		font-size: 2rem; 
+		font-size: 2rem;
 		font-weight: bold;
 		text-align: center;
-		margin-bottom: 1.5rem; 
+		margin-bottom: 1.5rem;
 	}
 
 	h2 {
-		font-size: 1.875rem; 
+		font-size: 1.875rem;
 		font-weight: bold;
 		text-align: center;
-		margin-bottom: 1.5rem; 
+		margin-bottom: 1.5rem;
 	}
 
 	/* Social login buttons container */
 	.social-buttons {
 		display: flex;
 		flex-direction: column;
-		gap: 1rem; 
-		margin-bottom: 1.5rem; 
+		gap: 1rem;
+		margin-bottom: 1.5rem;
 	}
 
 	.plain-button {
@@ -185,7 +184,7 @@
 	form {
 		display: flex;
 		flex-direction: column;
-		gap: 1rem; 
+		gap: 1rem;
 	}
 
 	/* Label styling */
@@ -234,8 +233,8 @@
 	}
 
 	/* Error message styling */
-	.error-message, .success-message {
+	.error-message,
+	.success-message {
 		text-align: center;
 	}
-
 </style>

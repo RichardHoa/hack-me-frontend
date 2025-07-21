@@ -1,7 +1,7 @@
 <script>
 	// @ts-nocheck
 
-	import { CHALLENGE_CATEGORIES, formatDate, formatNow } from '$lib/utils.js';
+	import { CHALLENGE_CATEGORIES, formatDate } from '$lib/utils.js';
 	import { ArrowUpFromDot } from 'lucide-svelte';
 	import { error } from '@sveltejs/kit';
 	import { enhance } from '$app/forms';
@@ -31,19 +31,22 @@
 </script>
 
 <svelte:head>
-	<title>HACKME: challenge response</title>
+	<title>HACKME: Challenge response</title>
 </svelte:head>
 
-<h1 class="challenge-title">
+<h1 class="challenge-repsonse-title">
 	<span class="visually-hidden">Challenge response name: </span>{challengeResponse.name}
 </h1>
 
-<div class="challenge-meta">
+<div class="meta">
 	<div>Author: {challengeResponse.authorName}</div>
 	<div>Up vote: {challengeResponse.upVote}</div>
 	<div>Down vote: {challengeResponse.downVote}</div>
 	<div>Created: {formatDate(challengeResponse.createdAt)}</div>
 	<div>Last Updated: {formatDate(challengeResponse.updatedAt)}</div>
+	<a href={localizeHref(`/challenge/${encodeURIComponent(challengeResponse.challengeName)}`)}
+		>Goes back to challenge</a
+	>
 	<!-- allow challenge edit directly -->
 	{#if data.user?.userName === challengeResponse.authorName}
 		<button onclick={() => (editMode = !editMode)}
@@ -64,7 +67,7 @@
 
 {#if editMode === false}
 	<h2>Challenge response detail</h2>
-	<div class="challenge-content">
+	<div class="challenge-response-content">
 		{@html challengeResponse.content}
 	</div>
 	<h2 class="heading">Comments</h2>
@@ -191,6 +194,13 @@
 </form>
 
 <style>
+	.meta div {
+		margin: 5px 0;
+	}
+	.meta a {
+		display: block;
+		margin: 5px 0;
+	}
 	.form-card {
 		max-width: 1200px;
 	}
@@ -203,7 +213,7 @@
 		width: 100%;
 		display: block;
 	}
-	.challenge-title {
+	.challenge-repsonse-title {
 		text-align: center;
 		font-size: 2rem;
 		margin-bottom: 1rem;
@@ -214,37 +224,33 @@
 		font-size: 1.8rem;
 	}
 
-	.challenge-meta h3 {
-		margin: 0.2rem 0;
-	}
-
-	.challenge-content {
+	.challenge-response-content {
 		margin: 1rem 0 2rem;
 		padding: 1rem;
 		border: 1px solid #ccc;
 		border-radius: 6px;
 	}
 
-	:global(.challenge-content h2) {
+	:global(.challenge-response-content h2) {
 		font-size: 2rem;
 	}
-	:global(.challenge-content h3) {
+	:global(.challenge-response-content h3) {
 		font-size: 1.7rem;
 	}
 
-	:global(.challenge-content h4) {
+	:global(.challenge-response-content h4) {
 		font-size: 1.5rem;
 	}
 
-	:global(.challenge-content h5) {
+	:global(.challenge-response-content h5) {
 		font-size: 1.3rem;
 	}
 
-	:global(.challenge-content h6) {
+	:global(.challenge-response-content h6) {
 		font-size: 1.1rem;
 	}
 
-	:global(.challenge-content img) {
+	:global(.challenge-response-content img) {
 		width: 100%;
 		display: block;
 	}
@@ -263,9 +269,5 @@
 	.no-comments {
 		font-style: italic;
 		margin-top: 1rem;
-	}
-
-	.form-challenge {
-		max-width: 800px;
 	}
 </style>

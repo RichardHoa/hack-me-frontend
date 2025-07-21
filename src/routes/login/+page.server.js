@@ -26,9 +26,12 @@ export const actions = {
 				loginMessage: response.data.message
 			};
 		} catch (err) {
-			return fail(err.response.status, {
-				loginSuccess: false,
-				loginMessage: err.response.data.message
+			console.error(err.response);
+
+			return fail(err.response?.status || 500, {
+				id: 'login',
+				success: false,
+				message: err.response?.data?.message || SERVER_ERROR_MESSAGE
 			});
 		}
 	},
@@ -50,9 +53,12 @@ export const actions = {
 				registrationMessage: response.data.message
 			};
 		} catch (err) {
-			return fail(err.response.status, {
-				registrationSuccess: false,
-				registrationMessage: err.response.data.message
+			console.error(err.response);
+
+			return fail(err.response?.status || 500, {
+				id: 'registration',
+				success: false,
+				message: err.response?.data?.message || SERVER_ERROR_MESSAGE
 			});
 		}
 	}

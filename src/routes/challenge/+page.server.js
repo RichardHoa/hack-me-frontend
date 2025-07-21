@@ -1,5 +1,5 @@
 import { error } from '@sveltejs/kit';
-import { axiosWithCookies, DEFAULT_PAGE_SIZE } from '$lib/utils';
+import { axiosWithCookies, DEFAULT_PAGE_SIZE, SERVER_ERROR_MESSAGE } from '$lib/utils';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load(event) {
@@ -13,8 +13,12 @@ export async function load(event) {
 			data: response.data
 		};
 	} catch (err) {
-		// Expected error: backend is down or returns error
-		console.error(err);
-		throw error(500, `Failed to fetch from backend, please come back later`);
+		console.error(err.response);
+
+		if (err.status && err.response?.data) {
+			throw error(err.status, err.response.data.message);
+		}
+
+		throw error(500, SERVER_ERROR_MESSAGE);
 	}
 }

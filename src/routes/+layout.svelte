@@ -5,69 +5,96 @@
 	let { children, data } = $props();
 	import ThemeToggle from './ThemeToggle.svelte';
 	import '../app.css';
-	import { localizeHref, setLocale } from '$lib/paraglide/runtime';
+	import { localizeHref, setLocale, locales, getLocale } from '$lib/paraglide/runtime';
 	import { m } from '$lib/paraglide/messages.js';
 	import { page } from '$app/state';
 
 	function isCurrentPage(path) {
 		return page.url.pathname === path;
 	}
+
+	function handleLocaleChange(event) {
+		const newLocale = event.target.value;
+		setLocale(newLocale);
+	}
 </script>
 
 <ModeWatcher defaultMode="dark" />
 
-<nav>
-	<a class="skip-to-content-link" href="#main"> Skip to main content </a>
-	<img src="" alt="Logo" class="logo" />
-	<div>
-		<ul class="menu">
-			<li>
-				<a href="/" class:active-link={isCurrentPage('/')}>
-					{m.true_stock_fireant_startle()}
-				</a>
-			</li>
-			<li>
-				<a
-					href={localizeHref('/challenge')}
-					class:active-link={isCurrentPage(localizeHref('/challenge'))}
-				>
-					{m.neat_close_elk_smile()}
-				</a>
-			</li>
-			<li>
-				{#if data.user != undefined}
-					<a
-						href={localizeHref('/account')}
-						class:active-link={isCurrentPage(localizeHref('/account'))}
-					>
-						Account
+<header>
+	<nav>
+		<a class="skip-to-content-link" href="#main"> Skip to main content </a>
+		<img src="" alt="Logo" class="logo" />
+		<div>
+			<ul class="menu">
+				<li>
+					<a href="/" class:active-link={isCurrentPage('/')}>
+						{m.true_stock_fireant_startle()}
 					</a>
-				{:else}
+				</li>
+				<li>
 					<a
-						href={localizeHref('/login')}
-						class:active-link={isCurrentPage(localizeHref('/login'))}
+						href={localizeHref('/challenge')}
+						class:active-link={isCurrentPage(localizeHref('/challenge'))}
 					>
-						Login
+						{m.neat_close_elk_smile()}
 					</a>
-				{/if}
-			</li>
-		</ul>
-		<ThemeToggle />
+				</li>
+				<li>
+					{#if data.user != undefined}
+						<a
+							href={localizeHref('/account')}
+							class:active-link={isCurrentPage(localizeHref('/account'))}
+						>
+							Account
+						</a>
+					{:else}
+						<a
+							href={localizeHref('/login')}
+							class:active-link={isCurrentPage(localizeHref('/login'))}
+						>
+							Login / Register
+						</a>
+					{/if}
+				</li>
+			</ul>
+			<ThemeToggle />
 
-		<button onclick={() => setLocale('en')}>en</button>
-		<button onclick={() => setLocale('vi')}>vi</button>
-	</div>
-</nav>
+			<div class="language-selector">
+				<label for="locale-select">Language:</label>
+				<select id="locale-select" value={getLocale()} onchange={handleLocaleChange}>
+					{#each locales as locale (locale)}
+						<option value={locale}>{locale.toUpperCase()}</option>
+					{/each}
+				</select>
+			</div>
+		</div>
+	</nav>
+</header>
 
 <main id="main">
 	{@render children()}
 </main>
 
 <footer>
+	<a href={localizeHref('/site-map')}>Site map</a>
+
+	<br />
 	{@html m.trick_front_lion_create()}
 </footer>
 
 <style>
+	.language-selector {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+	select {
+		padding: 0.25rem 0.5rem;
+		border-radius: 4px;
+		border: 1px solid #ccc;
+	}
+
 	.skip-to-content-link {
 		background: var(--hightlight);
 		color: black;
@@ -130,6 +157,7 @@
 
 	nav ul {
 		display: flex;
+		flex-wrap: wrap;
 		list-style: none;
 		margin: 0;
 		padding: 0;
@@ -143,5 +171,29 @@
 
 	nav a:hover {
 		text-decoration: underline;
+	}
+
+	@media (max-width: 768px) {
+		nav {
+			flex-direction: column;
+			height: auto;
+			gap: 1rem;
+			padding-block: 1rem;
+		}
+
+		nav > div {
+			flex-direction: column;
+			margin-right: 0; /* Remove the margin for centered alignment */
+		}
+
+		nav ul {
+			flex-direction: column;
+			width: 100%;
+		}
+
+		nav ul li {
+			width: 100%;
+			text-align: center;
+		}
 	}
 </style>

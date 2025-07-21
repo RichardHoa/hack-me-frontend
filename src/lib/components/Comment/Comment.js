@@ -1,5 +1,6 @@
 import { axiosWithCookies } from '$lib/utils';
 
+// All the server endpoint for Comment component
 export const CommentAPI = {
 	newChallenge: async (event) => {
 		const axios = axiosWithCookies(event);

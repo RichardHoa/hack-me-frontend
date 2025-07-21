@@ -1,7 +1,7 @@
 <script>
 	// @ts-nocheck
 
-	import { CHALLENGE_CATEGORIES, formatDate, formatNow } from '$lib/utils.js';
+	import { CHALLENGE_CATEGORIES, formatDate } from '$lib/utils.js';
 	import { ArrowUpFromDot, MoveDiagonal } from 'lucide-svelte';
 	import { marked } from 'marked';
 
@@ -45,12 +45,11 @@
 	<span class="visually-hidden">challenge name: </span>{challenge.name}
 </h1>
 
-<div class="challenge-meta">
+<div class="meta">
 	<div>Author: {challenge.userName}</div>
 	<div>Category: {challenge.category}</div>
 	<div>Created: {formatDate(challenge.createdAt)}</div>
 	<div>Last Updated: {formatDate(challenge.updatedAt)}</div>
-
 	{#if data.user?.userName === challenge.userName}
 		<button onclick={() => (editMode = !editMode)}
 			>{!editMode ? 'Edit challenge' : 'Exit edit mode'}</button
@@ -92,10 +91,6 @@
 						</p>
 					</div>
 				</a>
-
-				<!-- <div class="response-content">
-				{@html res.content}
-			</div> -->
 
 				<form
 					id="voteForm"
@@ -157,15 +152,12 @@
 		{/if}
 	{/if}
 	{#if comments?.length > 0}
-		<details>
-			<summary>Comments</summary>
-			<div><strong>Please note that comments can only be at most 5 level deep</strong></div>
-			<div class="comments">
-				{#each comments as comment}
-					<Comment {comment} challengeID={challenge.id} author={data.user?.userName} />
-				{/each}
-			</div>
-		</details>
+		<div><strong>Please note that comments can only be at most 5 level deep</strong></div>
+		<div class="comments">
+			{#each comments as comment}
+				<Comment {comment} challengeID={challenge.id} author={data.user?.userName} />
+			{/each}
+		</div>
 	{:else}
 		<p class="no-comments">No comments yet.</p>
 	{/if}
@@ -173,7 +165,7 @@
 	<div class="form-card">
 		<h2>Edit mode</h2>
 
-		<!-- Modify challenge -->
+		<!-- edit the challenge -->
 		<form
 			method="POST"
 			action="?/challenges"
@@ -184,6 +176,7 @@
 					formResult = result.data;
 
 					if (formResult.newName !== '' && formResult.success === true) {
+						// Redirect user to new page because our url use challengeName, not challengeID
 						setTimeout(() => {
 							window.location.href = localizeHref(
 								`/challenge/${encodeURIComponent(formResult.newName)}`
@@ -192,6 +185,7 @@
 					}
 
 					if (formResult.newName === '' && formResult.success === true) {
+						// if user does not change challenge name, proceed as usual
 						await update();
 						setTimeout(() => {
 							editMode = false;
@@ -228,6 +222,8 @@
 				id="content"
 				name="content"
 				rows="30"
+				spellcheck="false"
+				autocorrect="off"
 				required
 				aria-describedby="content-helper"
 				defaultValue={data.rawChallengeContent}
@@ -254,7 +250,7 @@
 	<div class="form-challenge form-card">
 		<h2>Challenge response</h2>
 
-		<!-- challenge response -->
+		<!-- make a challenge response -->
 		<form
 			method="POST"
 			action="?/challenges/responses"
@@ -302,7 +298,7 @@
 	</form>
 </dialog>
 
-<!-- Hidden Form to Submit -->
+<!-- Hidden Form to delete challenge -->
 <form
 	id="deleteForm"
 	method="POST"
@@ -322,6 +318,10 @@
 </form>
 
 <style>
+	.meta div {
+		margin: 5px 0;
+	}
+
 	a {
 		text-decoration: none;
 		color: inherit;
