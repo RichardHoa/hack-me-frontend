@@ -27,25 +27,21 @@ const handleAuth = async ({ event, resolve }) => {
 	const refreshToken = event.cookies.get(REFRESH_TOKEN_NAME);
 	event.locals.user = null;
 
-	if (!accessToken && !refreshToken) {
-		return resolve(event);
-	}
-
 	if (!accessToken && refreshToken) {
-		console.log('fetch new tokens');
 		const axios = axiosWithCookies(event);
 
 		try {
-			const response = await axios.post('/auth/tokens');
+			const response = await axios.get('/auth/tokens');
 			fetchAndSetTokens(response, event);
 			// get access token after fetching
 			accessToken = event.cookies.get(ACCESS_TOKEN_NAME);
 		} catch (err) {
-			console.error('Token refresh failed:', err.response);
+			console.error('Token refresh failed:', err.response.data);
 			return resolve(event);
 		}
 	}
 
+	// console.log();
 	// console.log('event cookie after checking');
 	// event.cookies.getAll().map((each) => console.log(each));
 	let payload;
@@ -55,20 +51,7 @@ const handleAuth = async ({ event, resolve }) => {
 		return resolve(event);
 	}
 
-	const now = Math.floor(Date.now() / 1000);
 	const { iat, exp } = payload;
-
-	const timeLeft = exp - now;
-
-	// Validate token claims
-	if (
-		typeof iat !== 'number' ||
-		typeof exp !== 'number' ||
-		iat > now || // issued in future
-		exp <= now // already expired
-	) {
-		return resolve(event);
-	}
 
 	const refreshTokenPayload = jwtDecode(refreshToken);
 

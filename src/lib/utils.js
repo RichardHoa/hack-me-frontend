@@ -68,6 +68,7 @@ export function fetchAndSetTokens(response, event) {
 
 	let csrfTokenValue = null;
 	let accessTokenMaxAge = null;
+	console.log('cookie from server: ', setCookie);
 	if (setCookie) {
 		for (const raw of setCookie) {
 			const [cookieStr] = raw.split(';');

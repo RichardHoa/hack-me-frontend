@@ -87,7 +87,7 @@ export const actions = {
 			});
 
 			// because the refresh token contains user name, we must fetch new ones
-			const refreshTokenResponse = await axios.post('/auth/tokens');
+			const refreshTokenResponse = await axios.get('/auth/tokens');
 			fetchAndSetTokens(refreshTokenResponse, event);
 
 			return {
