@@ -3,26 +3,86 @@
 
 	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';
+	import { jwtDecode } from 'jwt-decode';
+	import { onMount } from 'svelte';
 
 	let { form } = $props();
 
 	let loginFormSubmit = $state(false);
 	let registrationFormSubmit = $state(false);
+
+	function handleGoogleLogin(response) {
+		const info = jwtDecode(response.credential);
+
+		if (info.name && info.picture && info.email && info.sub) {
+			document.getElementById('google-name').value = info.name;
+			document.getElementById('google-email').value = info.email;
+			document.getElementById('google-picture').value = info.picture;
+			document.getElementById('google-id').value = info.sub;
+
+			document.getElementById('google-login-button').click();
+		} else {
+			console.error('Google token is missing required user information.');
+			form.id = 'login';
+			form.success = false;
+			form.message = 'The function is broken, please contact the dev';
+		}
+	}
+
+	onMount(() => {
+		// This ensures the Google script is loaded before we use it
+		if (typeof google !== 'undefined') {
+			// 1. Initialize the Google Client
+			google.accounts.id.initialize({
+				client_id: '13660335037-d0447j9qhkaep3088m5hujbj0jjag1ng.apps.googleusercontent.com',
+				callback: handleGoogleLogin
+			});
+
+			// 2. Render the button in our container
+			google.accounts.id.renderButton(document.getElementById('google-button-container'), {
+				theme: 'outline',
+				size: 'large',
+				shape: 'pill',
+				text: 'signin_with'
+			});
+		}
+	});
 </script>
 
 <svelte:head>
 	<title>HACKME: Login and Registration</title>
+
+	<script src="https://accounts.google.com/gsi/client" async></script>
 </svelte:head>
 <h1>Auth page</h1>
 <!-- Login Form Card -->
 <div class="form-card">
 	<h2>Login</h2>
 
-	<!-- Social Login Placeholders -->
-	<div class="social-buttons">
-		<button class="plain-button">Login with Google</button>
+	<div>
+		<div id="google-button-container"></div>
+
 		<button class="plain-button">Login with GitHub</button>
 	</div>
+
+	<form
+		method="POST"
+		action="?/login/google"
+		style="display: none;"
+		use:enhance={({ formElement, formData, action, cancel, submitter }) => {
+			loginFormSubmit = true;
+			return async ({ result, update }) => {
+				await update();
+				loginFormSubmit = false;
+			};
+		}}
+	>
+		<input type="hidden" id="google-name" name="userName" />
+		<input type="hidden" id="google-email" name="email" />
+		<input type="hidden" id="google-picture" name="imageLink" />
+		<input type="hidden" id="google-id" name="id" />
+		<button id="google-login-button">Submit form</button>
+	</form>
 
 	<form
 		method="POST"
@@ -65,9 +125,7 @@
 
 	{#if form}
 		{#if form?.id === 'login'}
-			<p class="error-message" role="alert">{form.loginMessage}</p>
-		{:else}
-			<p class="success-message">{form.loginMessage}</p>
+			<p class={form.success ? 'success-message' : 'error-message'} role="alert">{form.message}</p>
 		{/if}
 	{/if}
 </div>
@@ -120,14 +178,25 @@
 
 	{#if form}
 		{#if form?.id === 'registration'}
-			<p class="error-message" role="alert">{form.registrationMessage}</p>
-		{:else}
-			<p class="success-message">{form.registrationMessage}</p>
+			<p class={form.success ? 'success-message' : 'error-message'} role="alert">{form.message}</p>
 		{/if}
 	{/if}
 </div>
 
 <style>
+	#google-button-container {
+		display: flex;
+		justify-content: center;
+		margin-bottom: 1rem;
+		color-scheme: light;
+	}
+
+	#google-button-container > div {
+		background: transparent !important;
+		border: none !important;
+		box-shadow: none !important;
+	}
+
 	/* Form card styling */
 	.form-card {
 		margin: 20px auto;
@@ -155,11 +224,17 @@
 	.social-buttons {
 		display: flex;
 		flex-direction: column;
+		align-items: center;
 		gap: 1rem;
 		margin-bottom: 1.5rem;
 	}
 
 	.plain-button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem; /* Adjust space between icon and text */
+
 		width: 100%;
 		padding: 0.5rem 1rem;
 		border: 1px solid var(--light-gray);

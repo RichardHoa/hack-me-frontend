@@ -50,6 +50,7 @@
 						</a>
 					{:else}
 						<a
+							data-sveltekit-reload
 							href={localizeHref('/login')}
 							class:active-link={isCurrentPage(localizeHref('/login'))}
 						>

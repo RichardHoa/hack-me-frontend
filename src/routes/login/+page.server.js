@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { fetchAndSetTokens } from '$lib/utils';
+import { fetchAndSetTokens, SERVER_ERROR_MESSAGE } from '$lib/utils';
 import { fail } from '@sveltejs/kit';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
@@ -7,6 +7,61 @@ import { jwtDecode } from 'jwt-decode';
 export const load = async (event) => {};
 
 export const actions = {
+	'login/google': async (event) => {
+		const { cookies, request } = event;
+		const formData = await request.formData();
+		const name = formData.get('userName');
+		const email = formData.get('email');
+		const imageLink = formData.get('imageLink');
+		const googleID = formData.get('id');
+
+		try {
+			const response = await axios.post('/users/login', {
+				googleID: googleID,
+				email: email
+			});
+
+			fetchAndSetTokens(response, event);
+			return { id: 'login', success: true, message: response.data.message };
+		} catch (loginError) {
+			console.log(loginError);
+
+			if (loginError.response?.status !== 400) {
+				return fail(loginError.response?.status || 500, {
+					id: 'login',
+					success: false,
+					message: loginError.response?.data?.message || SERVER_ERROR_MESSAGE
+				});
+			}
+
+			try {
+				// Step 1: Register the new user
+				await axios.post('/users', {
+					userName: name,
+					email: email,
+					imageLink: imageLink,
+					googleID: googleID
+				});
+
+				// Step 2: Log in the newly created user
+				const secondLoginResponse = await axios.post('/users/login', {
+					googleID: googleID,
+					email: email
+				});
+
+				fetchAndSetTokens(secondLoginResponse, event);
+				return { id: 'login', success: true, message: secondLoginResponse.data.message };
+			} catch (registrationError) {
+				console.log(registrationError);
+
+				return fail(registrationError.response?.status || 500, {
+					id: 'login',
+					success: false,
+					message: registrationError.response?.data?.message || SERVER_ERROR_MESSAGE
+				});
+			}
+		}
+	},
 	login: async (event) => {
 		const { cookies, request } = event;
 		const formData = await request.formData();
@@ -22,8 +77,9 @@ export const actions = {
 			fetchAndSetTokens(response, event);
 
 			return {
-				loginSuccess: true,
-				loginMessage: response.data.message
+				id: 'login',
+				success: true,
+				message: response.data.message
 			};
 		} catch (err) {
 			console.error(err.response);
@@ -49,8 +105,9 @@ export const actions = {
 			});
 
 			return {
-				registrationSuccess: true,
-				registrationMessage: response.data.message
+				id: 'registration',
+				success: true,
+				message: response.data.message
 			};
 		} catch (err) {
 			console.error(err.response);
