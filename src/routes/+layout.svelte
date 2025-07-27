@@ -34,6 +34,7 @@
 				</li>
 				<li>
 					<a
+						data-sveltekit-preload-data="hover"
 						href={localizeHref('/challenge')}
 						class:active-link={isCurrentPage(localizeHref('/challenge'))}
 					>
@@ -43,6 +44,7 @@
 				<li>
 					{#if data.user != undefined}
 						<a
+							data-sveltekit-preload-data="hover"
 							href={localizeHref('/account')}
 							class:active-link={isCurrentPage(localizeHref('/account'))}
 						>

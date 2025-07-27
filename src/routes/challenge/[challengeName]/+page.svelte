@@ -98,21 +98,36 @@
 					action="?/challenges/responses/votes"
 					use:enhance={({ formElement, formData, action, cancel, submitter }) => {
 						selectedVoteType = formData.get('voteType');
+
 						return async ({ result, update }) => {
+							formSubmit = true;
 							await update();
+							formSubmit = false;
 						};
 					}}
 				>
 					<input type="hidden" name="challengeResponseID" value={res.id} />
 
 					<div class="response-votes">
-						<button type="submit" name="voteType" value="upVote" class="vote up">
-							⬆️ {res.upVote}
+						<button
+							type="submit"
+							name="voteType"
+							value="upVote"
+							class="vote up"
+							disabled={formSubmit}
+						>
+							⬆️ {formSubmit ? 'Updating' : res.upVote}
 						</button>
 
-						<button type="submit" name="voteType" value="downVote" class="vote down">
+						<button
+							type="submit"
+							name="voteType"
+							value="downVote"
+							class="vote down"
+							disabled={formSubmit}
+						>
 							⬇️
-							{res.downVote}
+							{formSubmit ? 'Updating' : res.downVote}
 						</button>
 					</div>
 					{#if form?.id === 'postVote'}

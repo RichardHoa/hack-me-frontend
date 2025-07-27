@@ -11,6 +11,7 @@
 	let showReply = $state(false);
 	let editMode = $state(false);
 	let formResult = $state('');
+	let isLoading = $state(false);
 
 	function handleDeleteComment() {
 		document.getElementById(`delete-comment-${comment.id}`).click();
@@ -34,11 +35,13 @@
 			class="reply-form"
 			use:enhance={({ formElement, formData, action, cancel, submitter }) => {
 				return async ({ result, update }) => {
+					isLoading = true;
 					formResult = result.data;
 					await update();
 					if (result.data.success === true) {
 						editMode = false;
 					}
+					isLoading = false;
 				};
 			}}
 		>
@@ -47,12 +50,12 @@
 				rows="3"
 				required
 				name="content"
-				defaultValue={comment.content}
+				defaultValue={isLoading ? 'Updating....' : comment.content}
 				autocorrect="off"
 				spellcheck="false"
 			></textarea>
 			<button type="submit" id={`modify-comment-${comment.id}`} onclick={handleModifyComment}
-				>Edit Reply</button
+				>{isLoading ? 'Please wait' : 'Edit comment'}</button
 			>
 		</form>
 	{:else}
@@ -63,10 +66,12 @@
 
 	{#if author}
 		{#if comment.author === author}
-			<button onclick={() => (editMode = !editMode)}>Edit comment</button>
+			<button onclick={() => (editMode = !editMode)}
+				>{editMode ? 'Exit edit mode' : 'Edit comment'}</button
+			>
 		{/if}
 
-		<button onclick={handleDeleteComment}>Delete comment</button>
+		<button onclick={handleDeleteComment}>{isLoading ? 'Please wait' : 'Delete comment'}</button>
 	{/if}
 
 	<button onclick={() => (showReply = !showReply)}>
@@ -80,8 +85,10 @@
 			class="reply-form"
 			use:enhance={({ formElement, formData, action, cancel, submitter }) => {
 				return async ({ result, update }) => {
+					isLoading = true;
 					formResult = result.data;
 					await update();
+					isLoading = false;
 					if (result.data.success === true) {
 						showReply = false;
 					}
@@ -92,7 +99,7 @@
 			<input type="hidden" value={challengeID} name="challengeID" />
 			<input type="hidden" value={comment.id} name="parentID" />
 			<textarea rows="3" required placeholder="Write your reply..." name="content"></textarea>
-			<button type="submit">Submit Reply</button>
+			<button type="submit">{isLoading ? 'Please wait' : 'Reply'}</button>
 		</form>
 	{/if}
 	{#if formResult?.id === 'replyComment' || formResult?.id === 'deleteComment'}
@@ -121,8 +128,10 @@
 		style="display: none;"
 		use:enhance={({ formElement, formData, action, cancel, submitter }) => {
 			return async ({ result, update }) => {
+				isLoading = true;
 				formResult = result.data;
 				await update();
+				isLoading = false;
 				if (result.data.success === true) {
 					showReply = false;
 				}

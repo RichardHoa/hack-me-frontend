@@ -12,21 +12,9 @@
 	let registrationFormSubmit = $state(false);
 
 	function handleGoogleLogin(response) {
-		const info = jwtDecode(response.credential);
+		document.getElementById('google-jwt').value = response.credential;
 
-		if (info.name && info.picture && info.email && info.sub) {
-			document.getElementById('google-name').value = info.name;
-			document.getElementById('google-email').value = info.email;
-			document.getElementById('google-picture').value = info.picture;
-			document.getElementById('google-id').value = info.sub;
-
-			document.getElementById('google-login-button').click();
-		} else {
-			console.error('Google token is missing required user information.');
-			form.id = 'login';
-			form.success = false;
-			form.message = 'The function is broken, please contact the dev';
-		}
+		document.getElementById('google-login-button').click();
 	}
 
 	onMount(() => {
@@ -77,10 +65,7 @@
 			};
 		}}
 	>
-		<input type="hidden" id="google-name" name="userName" />
-		<input type="hidden" id="google-email" name="email" />
-		<input type="hidden" id="google-picture" name="imageLink" />
-		<input type="hidden" id="google-id" name="id" />
+		<input type="hidden" id="google-jwt" name="jwtToken" />
 		<button id="google-login-button">Submit form</button>
 	</form>
 

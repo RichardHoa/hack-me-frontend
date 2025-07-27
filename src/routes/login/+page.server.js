@@ -2,6 +2,7 @@
 import { fetchAndSetTokens, SERVER_ERROR_MESSAGE } from '$lib/utils';
 import { fail } from '@sveltejs/kit';
 import axios from 'axios';
+import { OAuth2Client } from 'google-auth-library';
 import { jwtDecode } from 'jwt-decode';
 
 export const load = async (event) => {};
@@ -10,10 +11,20 @@ export const actions = {
 	'login/google': async (event) => {
 		const { cookies, request } = event;
 		const formData = await request.formData();
-		const name = formData.get('userName');
-		const email = formData.get('email');
-		const imageLink = formData.get('imageLink');
-		const googleID = formData.get('id');
+		const token = formData.get('jwtToken');
+
+		const client = new OAuth2Client();
+		const ticket = await client.verifyIdToken({
+			idToken: token,
+			audience: '13660335037-d0447j9qhkaep3088m5hujbj0jjag1ng.apps.googleusercontent.com'
+		});
+
+		const payload = ticket.getPayload();
+
+		const name = payload['name'];
+		const email = payload['email'];
+		const imageLink = payload['picture'];
+		const googleID = payload['sub'];
 
 		try {
 			const response = await axios.post('/users/login', {

@@ -8,7 +8,11 @@ const config = {
 		csp: {
 			directives: {
 				'script-src': ['self', 'https://accounts.google.com/gsi/client'],
-				'connect-src': ['https://accounts.google.com/gsi/', 'http://localhost:5173'],
+				'connect-src': [
+					'https://accounts.google.com/gsi/',
+					'http://localhost:5173',
+					'http://localhost:8080'
+				],
 				'frame-src': ['https://accounts.google.com/gsi/']
 			}
 		}
