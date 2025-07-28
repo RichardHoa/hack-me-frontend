@@ -1,6 +1,8 @@
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
+// @ts-ignore
 import devtoolsJson from 'vite-plugin-devtools-json';
 import { sveltekit } from '@sveltejs/kit/vite';
+// @ts-ignore
 import { defineConfig } from 'vite';
 
 export default defineConfig({
@@ -37,6 +39,7 @@ export default defineConfig({
 			]
 		})
 	],
+
 	test: {
 		projects: [
 			{
@@ -64,5 +67,5 @@ export default defineConfig({
 				}
 			}
 		]
-	},
+	}
 });

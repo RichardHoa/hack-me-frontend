@@ -5,6 +5,7 @@ import { marked } from 'marked';
 import { env } from '$env/dynamic/public';
 
 const BASE_URL = `${env.PUBLIC_SERVER_URL}/${env.PUBLIC_API_VERSION}`;
+console.log('BASE URL: ', BASE_URL);
 // --- Axios Global Configuration ---
 axios.defaults.baseURL = BASE_URL;
 axios.defaults.withCredentials = true;
