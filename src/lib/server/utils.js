@@ -2,6 +2,7 @@ import { getRequestEvent } from '$app/server';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { env } from '$env/dynamic/public';
+import { dev } from '$app/environment';
 
 const BASE_URL = `${env.PUBLIC_SERVER_URL}/${env.PUBLIC_API_VERSION}`;
 
@@ -16,6 +17,7 @@ export function fetchAndSetTokens(response, event) {
 
 	let csrfTokenValue = null;
 	let accessTokenMaxAge = null;
+	console.log('Cookies sent from backend', setCookie);
 	if (setCookie) {
 		for (const raw of setCookie) {
 			const [cookieStr] = raw.split(';');
@@ -51,13 +53,19 @@ export function fetchAndSetTokens(response, event) {
 
 			event.cookies.set(name, value, {
 				path: '/',
-				maxAge
+				maxAge,
+				httpOnly: true,
+				secure: !dev,
+				sameSite: 'strict'
 			});
 		}
 		// set csrf token
 		event.cookies.set('csrfToken', csrfTokenValue, {
 			path: '/',
-			maxAge: accessTokenMaxAge
+			maxAge: accessTokenMaxAge,
+			httpOnly: true,
+			secure: !dev,
+			sameSite: 'strict'
 		});
 	}
 }

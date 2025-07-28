@@ -15,8 +15,8 @@ const handleParaglide = ({ event, resolve }) =>
 	});
 
 const handleAuth = async ({ event, resolve }) => {
-	// console.log('event cookies before checking');
-	// event.cookies.getAll().map((each) => console.log(each));
+	console.log('event cookies before checking');
+	event.cookies.getAll().map((each) => console.log(each));
 
 	let accessToken = event.cookies.get(ACCESS_TOKEN_NAME);
 	const refreshToken = event.cookies.get(REFRESH_TOKEN_NAME);

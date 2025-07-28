@@ -1,4 +1,5 @@
 # TODO
+
 [ ] configure CSP properly
 [ ] Docker
 [ ] Login with GITHUB

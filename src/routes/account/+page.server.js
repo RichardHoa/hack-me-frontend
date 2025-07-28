@@ -1,10 +1,6 @@
 // src/routes/account/+page.server.js
 import { localizeHref } from '$lib/paraglide/runtime';
-import {
-	axiosWithCookies,
-	fetchAndSetTokens,
-	requireLogin,
-} from '$lib/server/utils';
+import { axiosWithCookies, fetchAndSetTokens, requireLogin } from '$lib/server/utils';
 import { SERVER_ERROR_MESSAGE } from '$lib/utils';
 import { error, fail, redirect } from '@sveltejs/kit';
 

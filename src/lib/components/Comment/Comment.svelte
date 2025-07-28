@@ -1,8 +1,6 @@
 <script>
 	// @ts-nocheck
-	import { marked } from 'marked';
 	import { formatDate } from '$lib/utils.js';
-	import DOMPurify from 'dompurify';
 	import { enhance } from '$app/forms';
 	import Comment from '$lib/components/Comment/Comment.svelte';
 	let { comment, author, challengeID = null, challengeResponseID = null } = $props();

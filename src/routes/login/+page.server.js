@@ -36,7 +36,6 @@ export const actions = {
 			fetchAndSetTokens(response, event);
 			return { id: 'login', success: true, message: response.data.message };
 		} catch (loginError) {
-
 			if (loginError.response?.status !== 400) {
 				return fail(loginError.response?.status || 500, {
 					id: 'login',
@@ -63,7 +62,6 @@ export const actions = {
 				fetchAndSetTokens(secondLoginResponse, event);
 				return { id: 'login', success: true, message: secondLoginResponse.data.message };
 			} catch (registrationError) {
-
 				return fail(registrationError.response?.status || 500, {
 					id: 'login',
 					success: false,
