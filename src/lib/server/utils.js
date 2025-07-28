@@ -43,19 +43,18 @@ export function fetchAndSetTokens(response, event) {
 					}
 
 					if (maxAge <= 0) {
-						console.warn(`JWT for ${name} is already expired.`);
+						console.log(`JWT for ${name} is already expired.`);
 						continue;
 					}
 				} catch (e) {
-					console.warn(`Failed to decode ${name}, setting session cookie.`, e);
+					console.log(`Failed to decode ${name}, setting session cookie.`, e);
 				}
 			}
 
 			event.cookies.set(name, value, {
 				path: '/',
 				maxAge,
-				httpOnly: true,
-				secure: !dev,
+				secure: false,
 				sameSite: 'strict'
 			});
 		}
@@ -63,10 +62,12 @@ export function fetchAndSetTokens(response, event) {
 		event.cookies.set('csrfToken', csrfTokenValue, {
 			path: '/',
 			maxAge: accessTokenMaxAge,
-			httpOnly: true,
-			secure: !dev,
+			secure: false,
 			sameSite: 'strict'
 		});
+
+		console.log('event cookies AFTER SETTING');
+		event.cookies.getAll().map((each) => console.log(each));
 	}
 }
 
