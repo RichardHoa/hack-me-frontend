@@ -1,14 +1,10 @@
 services:
-  db:
-    image: postgres
-    restart: always
+  frontend:
+    build: .
+    container_name: hackme-frontend
     ports:
-      - 5434:5432
-    environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: mysecretpassword
-      POSTGRES_DB: local
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-volumes:
-  pgdata:
+      - '3000:3000'
+    restart: unless-stopped
+    env_file:
+      - .env
+    

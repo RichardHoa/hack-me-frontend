@@ -2,8 +2,6 @@
 	// @ts-nocheck
 
 	import { enhance } from '$app/forms';
-	import { page } from '$app/stores';
-	import { jwtDecode } from 'jwt-decode';
 	import { onMount } from 'svelte';
 
 	let { form } = $props();
@@ -12,35 +10,79 @@
 	let registrationFormSubmit = $state(false);
 
 	function handleGoogleLogin(response) {
-		document.getElementById('google-jwt').value = response.credential;
+		// Get the form and input elements directly
+		const googleForm = document.getElementById('google-login-form');
+		const jwtInput = document.getElementById('google-jwt');
 
-		document.getElementById('google-login-button').click();
+		if (googleForm && jwtInput) {
+			jwtInput.value = response.credential;
+			googleForm.requestSubmit();
+		} else {
+			console.error('Could not find the Google login form or its JWT input.');
+		}
+	}
+
+	/**
+	 * This function contains the logic to initialize and render the Google Sign-In button.
+	 * It's called only after we're sure the Google GSI script is loaded.
+	 */
+	function renderGoogleButton() {
+		if (!window.google) {
+			console.error('Attempted to render Google button, but `window.google` is not available.');
+			return;
+		}
+
+		window.google.accounts.id.initialize({
+			client_id: '1025927927956-2v6pno708qqkchj3u2gq5g9j2ni4hn2u.apps.googleusercontent.com',
+			callback: handleGoogleLogin
+		});
+
+		window.google.accounts.id.renderButton(document.getElementById('google-button-container'), {
+			theme: 'outline',
+			size: 'large',
+			shape: 'pill',
+			text: 'signin_with'
+		});
+	}
+
+	/**
+	 * Checks if the Google script is loaded. If not, it loads the script dynamically
+	 * and then calls the rendering function via the `onload` callback.
+	 */
+	function setupGoogleScript() {
+		// If the script is already there, just render the button.
+		if (window.google) {
+			console.log('Google script already loaded, rendering button.');
+			renderGoogleButton();
+			return;
+		}
+
+		// If not, create a script tag to load it.
+		console.log('Google script not found. Loading dynamically...');
+		const script = document.createElement('script');
+		script.src = 'https://accounts.google.com/gsi/client';
+		script.async = true;
+		script.defer = true;
+
+		script.onload = () => {
+			console.log('Google script has been loaded. Initializing...');
+			renderGoogleButton();
+		};
+
+		script.onerror = () => {
+			console.error('Failed to load the Google GSI script.');
+		};
+
+		document.head.appendChild(script);
 	}
 
 	onMount(() => {
-		// This ensures the Google script is loaded before we use it
-		if (typeof google !== 'undefined') {
-			// 1. Initialize the Google Client
-			google.accounts.id.initialize({
-				client_id: '13660335037-d0447j9qhkaep3088m5hujbj0jjag1ng.apps.googleusercontent.com',
-				callback: handleGoogleLogin
-			});
-
-			// 2. Render the button in our container
-			google.accounts.id.renderButton(document.getElementById('google-button-container'), {
-				theme: 'outline',
-				size: 'large',
-				shape: 'pill',
-				text: 'signin_with'
-			});
-		}
+		setupGoogleScript();
 	});
 </script>
 
 <svelte:head>
 	<title>HACKME: Login and Registration</title>
-
-	<script src="https://accounts.google.com/gsi/client" async></script>
 </svelte:head>
 <h1>Auth page</h1>
 <!-- Login Form Card -->
@@ -54,6 +96,7 @@
 	</div>
 
 	<form
+		id="google-login-form"
 		method="POST"
 		action="?/login/google"
 		style="display: none;"
@@ -176,12 +219,6 @@
 		color-scheme: light;
 	}
 
-	#google-button-container > div {
-		background: transparent !important;
-		border: none !important;
-		box-shadow: none !important;
-	}
-
 	/* Form card styling */
 	.form-card {
 		margin: 20px auto;
@@ -206,13 +243,13 @@
 	}
 
 	/* Social login buttons container */
-	.social-buttons {
+	/* .social-buttons {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		gap: 1rem;
 		margin-bottom: 1.5rem;
-	}
+	} */
 
 	.plain-button {
 		display: flex;

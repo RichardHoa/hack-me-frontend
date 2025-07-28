@@ -1,4 +1,4 @@
-import { axiosWithCookies } from '$lib/utils';
+import { axiosWithCookies } from '$lib/server/utils';
 
 // All the server endpoint for Comment component
 export const CommentAPI = {
@@ -126,7 +126,6 @@ export const CommentAPI = {
 		const axios = axiosWithCookies(event);
 		const formData = await event.request.formData();
 		const id = formData.get('id');
-		console.log(id);
 
 		try {
 			const response = await axios.delete('/comments', { data: { commentID: id } });

@@ -1,6 +1,5 @@
 <script>
 	// @ts-nocheck
-
 	import { localizeHref } from '$lib/paraglide/runtime.js';
 	import { ArrowBigLeft } from 'lucide-svelte';
 	import { ArrowBigRight } from 'lucide-svelte';

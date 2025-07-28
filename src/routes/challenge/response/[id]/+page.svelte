@@ -3,9 +3,7 @@
 
 	import { CHALLENGE_CATEGORIES, formatDate } from '$lib/utils.js';
 	import { ArrowUpFromDot } from 'lucide-svelte';
-	import { error } from '@sveltejs/kit';
 	import { enhance } from '$app/forms';
-	import { goto } from '$app/navigation';
 	import { localizeHref } from '$lib/paraglide/runtime';
 	import Comment from '$lib/components/Comment/Comment.svelte';
 	let { data, form } = $props();

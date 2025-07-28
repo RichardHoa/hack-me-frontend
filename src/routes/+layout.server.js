@@ -1,4 +1,4 @@
-import { requireLogin } from '$lib/utils';
+import { requireLogin } from '$lib/server/utils';
 
 /** @type {import('./$types').LayoutServerLoad} */
 export async function load() {

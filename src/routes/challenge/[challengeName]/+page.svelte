@@ -4,8 +4,6 @@
 	import { CHALLENGE_CATEGORIES, formatDate } from '$lib/utils.js';
 	import { ArrowUpFromDot, MoveDiagonal } from 'lucide-svelte';
 	import { marked } from 'marked';
-
-	import { error } from '@sveltejs/kit';
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import { localizeHref } from '$lib/paraglide/runtime';

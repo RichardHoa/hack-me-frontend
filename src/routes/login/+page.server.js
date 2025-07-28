@@ -1,5 +1,6 @@
 // @ts-nocheck
-import { fetchAndSetTokens, SERVER_ERROR_MESSAGE } from '$lib/utils';
+import { fetchAndSetTokens } from '$lib/server/utils';
+import { SERVER_ERROR_MESSAGE } from '$lib/utils';
 import { fail } from '@sveltejs/kit';
 import axios from 'axios';
 import { OAuth2Client } from 'google-auth-library';
@@ -16,7 +17,7 @@ export const actions = {
 		const client = new OAuth2Client();
 		const ticket = await client.verifyIdToken({
 			idToken: token,
-			audience: '13660335037-d0447j9qhkaep3088m5hujbj0jjag1ng.apps.googleusercontent.com'
+			audience: '1025927927956-2v6pno708qqkchj3u2gq5g9j2ni4hn2u.apps.googleusercontent.com'
 		});
 
 		const payload = ticket.getPayload();
@@ -35,7 +36,6 @@ export const actions = {
 			fetchAndSetTokens(response, event);
 			return { id: 'login', success: true, message: response.data.message };
 		} catch (loginError) {
-			console.log(loginError);
 
 			if (loginError.response?.status !== 400) {
 				return fail(loginError.response?.status || 500, {
@@ -63,7 +63,6 @@ export const actions = {
 				fetchAndSetTokens(secondLoginResponse, event);
 				return { id: 'login', success: true, message: secondLoginResponse.data.message };
 			} catch (registrationError) {
-				console.log(registrationError);
 
 				return fail(registrationError.response?.status || 500, {
 					id: 'login',

@@ -4,8 +4,8 @@ import {
 	axiosWithCookies,
 	fetchAndSetTokens,
 	requireLogin,
-	SERVER_ERROR_MESSAGE
-} from '$lib/utils';
+} from '$lib/server/utils';
+import { SERVER_ERROR_MESSAGE } from '$lib/utils';
 import { error, fail, redirect } from '@sveltejs/kit';
 
 export async function load(event) {

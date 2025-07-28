@@ -1,0 +1,30 @@
+# Ignore build artifacts and local development files
+.svelte-kit
+build/
+node_modules/
+
+# --- MODIFICATION ---
+# DO NOT ignore the .env file, as it's needed during the build process.
+# The multi-stage Dockerfile ensures it won't be in the final image.
+# .env
+.env.*
+!.env.example
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore version control
+.git
+.gitignore
+
+# Ignore Docker files themselves
+Dockerfile
+docker-compose.yml
+
+# Ignore test reports and logs
+coverage/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

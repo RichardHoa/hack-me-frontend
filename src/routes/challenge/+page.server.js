@@ -1,5 +1,6 @@
 import { error } from '@sveltejs/kit';
-import { axiosWithCookies, DEFAULT_PAGE_SIZE, SERVER_ERROR_MESSAGE } from '$lib/utils';
+import { axiosWithCookies } from '$lib/server/utils';
+import { DEFAULT_PAGE_SIZE, SERVER_ERROR_MESSAGE } from '$lib/utils';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load(event) {
@@ -8,7 +9,6 @@ export async function load(event) {
 	try {
 		const url = `/challenges?pageSize=${DEFAULT_PAGE_SIZE}`;
 		const response = await axios.get(url);
-
 		return {
 			data: response.data
 		};

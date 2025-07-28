@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { localizeHref } from '$lib/paraglide/runtime.js';
-import { axiosWithCookies, lowerHeaderRenderer, SERVER_ERROR_MESSAGE } from '$lib/utils';
+import { axiosWithCookies } from '$lib/server/utils';
+import { lowerHeaderRenderer, SERVER_ERROR_MESSAGE } from '$lib/utils';
 import { JSDOM } from 'jsdom';
 import DOMPurify from 'dompurify';
 import { marked } from 'marked';

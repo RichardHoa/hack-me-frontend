@@ -1,8 +1,6 @@
 <script>
 	// @ts-nocheck
-
 	import { enhance } from '$app/forms';
-	import { page } from '$app/stores';
 	import { CHALLENGE_CATEGORIES } from '$lib/utils.js';
 	let { form, data } = $props();
 

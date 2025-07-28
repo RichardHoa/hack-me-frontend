@@ -1,14 +1,9 @@
 // @ts-nocheck
 import { sequence } from '@sveltejs/kit/hooks';
-import * as auth from '$lib/server/auth';
 import { paraglideMiddleware } from '$lib/paraglide/server';
-import {
-	ACCESS_TOKEN_NAME,
-	axiosWithCookies,
-	fetchAndSetTokens,
-	REFRESH_TOKEN_NAME
-} from '$lib/utils';
+import { axiosWithCookies, fetchAndSetTokens } from '$lib/server/utils';
 import { jwtDecode } from 'jwt-decode';
+import { ACCESS_TOKEN_NAME, REFRESH_TOKEN_NAME } from '$lib/utils';
 
 const handleParaglide = ({ event, resolve }) =>
 	paraglideMiddleware(event.request, ({ request, locale }) => {
@@ -36,12 +31,10 @@ const handleAuth = async ({ event, resolve }) => {
 			// get access token after fetching
 			accessToken = event.cookies.get(ACCESS_TOKEN_NAME);
 		} catch (err) {
-			console.error('Token refresh failed:', err.response.data);
 			return resolve(event);
 		}
 	}
 
-	// console.log();
 	// console.log('event cookie after checking');
 	// event.cookies.getAll().map((each) => console.log(each));
 	let payload;

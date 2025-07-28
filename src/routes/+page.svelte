@@ -1,7 +1,6 @@
 <script>
 	import { localizeHref } from '$lib/paraglide/runtime.js';
 	import { m } from '$lib/paraglide/messages.js';
-	import { formatDate } from '$lib/utils.js';
 </script>
 
 <svelte:head>

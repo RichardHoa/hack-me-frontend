@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-auto';
+import adapter from '@sveltejs/adapter-node';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -11,7 +11,8 @@ const config = {
 				'connect-src': [
 					'https://accounts.google.com/gsi/',
 					'http://localhost:5173',
-					'http://localhost:8080'
+					'http://localhost:8080',
+					'http://localhost:3000'
 				],
 				'frame-src': ['https://accounts.google.com/gsi/']
 			}

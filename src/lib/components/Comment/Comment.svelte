@@ -1,6 +1,5 @@
 <script>
 	// @ts-nocheck
-
 	import { marked } from 'marked';
 	import { formatDate } from '$lib/utils.js';
 	import DOMPurify from 'dompurify';
