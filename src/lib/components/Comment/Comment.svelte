@@ -66,9 +66,8 @@
 			<button onclick={() => (editMode = !editMode)}
 				>{editMode ? 'Exit edit mode' : 'Edit comment'}</button
 			>
+			<button onclick={handleDeleteComment}>{isLoading ? 'Please wait' : 'Delete comment'}</button>
 		{/if}
-
-		<button onclick={handleDeleteComment}>{isLoading ? 'Please wait' : 'Delete comment'}</button>
 	{/if}
 
 	<button onclick={() => (showReply = !showReply)}>

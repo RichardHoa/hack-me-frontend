@@ -44,17 +44,15 @@
 			params.append('popularity', popularity);
 		}
 
-		const url = `/challenges?page=${page}&pageSize=${DEFAULT_PAGE_SIZE}&${params.toString()}`;
-
+		const url = `/api/challenges?page=${page}&pageSize=${DEFAULT_PAGE_SIZE}&${params.toString()}`;
 		try {
 			filteredChallenges = [];
 			await tick();
 
-			const res = await axios.get(url);
+			const res = await axios.get(url, { baseURL: '' });
 			filteredChallenges = res.data.data;
 			maxPage = Number(res.data.metadata.maxPage);
 		} catch (e) {
-			error = 'Something went wrong.';
 			console.error(e);
 		} finally {
 			loading = false;

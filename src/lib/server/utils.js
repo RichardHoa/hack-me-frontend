@@ -17,7 +17,6 @@ export function fetchAndSetTokens(response, event) {
 
 	let csrfTokenValue = null;
 	let accessTokenMaxAge = null;
-	console.log('Cookies sent from backend', setCookie);
 	if (setCookie) {
 		for (const raw of setCookie) {
 			const [cookieStr] = raw.split(';');
@@ -54,7 +53,8 @@ export function fetchAndSetTokens(response, event) {
 			event.cookies.set(name, value, {
 				path: '/',
 				maxAge,
-				secure: false,
+				secure: !dev,
+				httpOnly: true,
 				sameSite: 'strict'
 			});
 		}
@@ -62,12 +62,10 @@ export function fetchAndSetTokens(response, event) {
 		event.cookies.set('csrfToken', csrfTokenValue, {
 			path: '/',
 			maxAge: accessTokenMaxAge,
-			secure: false,
+			secure: !dev,
+			httpOnly: true,
 			sameSite: 'strict'
 		});
-
-		console.log('event cookies AFTER SETTING');
-		event.cookies.getAll().map((each) => console.log(each));
 	}
 }
 

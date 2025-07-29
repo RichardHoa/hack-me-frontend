@@ -2,9 +2,17 @@
 	// @ts-nocheck
 
 	import { enhance } from '$app/forms';
+	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 
 	let { form } = $props();
+
+	const GITHUB_CLIENT_ID = 'Ov23lii1MxSizT3GNdKh';
+	const GITHUB_AUTH_URL = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&scope=user:email`;
+
+	function handleGithubLogin() {
+		window.open(GITHUB_AUTH_URL, '_blank');
+	}
 
 	let loginFormSubmit = $state(false);
 	let registrationFormSubmit = $state(false);
@@ -52,20 +60,17 @@
 	function setupGoogleScript() {
 		// If the script is already there, just render the button.
 		if (window.google) {
-			console.log('Google script already loaded, rendering button.');
 			renderGoogleButton();
 			return;
 		}
 
 		// If not, create a script tag to load it.
-		console.log('Google script not found. Loading dynamically...');
 		const script = document.createElement('script');
 		script.src = 'https://accounts.google.com/gsi/client';
 		script.async = true;
 		script.defer = true;
 
 		script.onload = () => {
-			console.log('Google script has been loaded. Initializing...');
 			renderGoogleButton();
 		};
 
@@ -78,6 +83,16 @@
 
 	onMount(() => {
 		setupGoogleScript();
+
+		const githubCode = page.url.searchParams.get('code');
+		if (githubCode) {
+			const githubForm = document.getElementById('github-login-form');
+			const codeInput = document.getElementById('github-code');
+			if (githubForm && codeInput) {
+				codeInput.value = githubCode;
+				githubForm.requestSubmit();
+			}
+		}
 	});
 </script>
 
@@ -92,8 +107,26 @@
 	<div>
 		<div id="google-button-container"></div>
 
-		<button class="plain-button">Login with GitHub</button>
+		<button class="plain-button" onclick={handleGithubLogin}>Login with GitHub</button>
 	</div>
+
+	<form
+		id="github-login-form"
+		method="POST"
+		action="?/login/github"
+		style="display: none;"
+		use:enhance={({ formElement, formData, action, cancel, submitter }) => {
+			window.history.pushState(null, '', '/login');
+			loginFormSubmit = true;
+			return async ({ result, update }) => {
+				await update();
+				loginFormSubmit = false;
+			};
+		}}
+	>
+		<input type="hidden" id="github-code" name="code" />
+		<button type="submit">Submit GitHub Code</button>
+	</form>
 
 	<form
 		id="google-login-form"
