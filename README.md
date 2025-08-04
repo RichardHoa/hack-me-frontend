@@ -1,40 +1,49 @@
-# TODO
+# Hack Me Frontend
 
-# sv
+This is the frontend for the Hack Me project.
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+## Getting Started
 
-## Creating a project
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
-If you're seeing this, you've probably already done this step. Congrats!
+### Prerequisites
 
+You need to have [Node.js](httpss://nodejs.org/) installed. This project uses [pnpm](httpss://pnpm.io/) as the primary package manager. If you do not have pnpm, you can use npm, which comes with Node.js.
+
+### Installation
+
+1.  Clone the repo
+    ```bash
+    git clone [https://github.com/RichardHoa/hack-me-frontend.git](https://github.com/RichardHoa/hack-me-frontend.git)
+    ```
+2.  Install NPM packages.
+
+    Using pnpm (recommended):
+    ```bash
+    pnpm install
+    ```
+    Or, if you are using npm:
+    ```bash
+    npm install
+    ```
+
+3. Run the development server:
+
+Using pnpm:
 ```bash
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
+pnpm dev
 ```
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Or if you are using npm
 
 ```bash
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
 
-## Building
+## Deployment
 
-To create a production version of your app:
+This project includes a `Dockerfile` for production deployment. While you can use it for local deployment, it is not necessary. There is no Github Actions pipeline for this project so I use Makefile to deploy to the cloud, this is not proper production practice
 
-```bash
-npm run build
-```
+## Full local development
 
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+For a full local development experience, you will need to run the backend server as well. You can find the backend repository and instructions here: [backend repo](https://github.com/RichardHoa/hack-me)
