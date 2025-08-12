@@ -1,10 +1,10 @@
 # Hack Me Frontend
 
-This is the frontend for the Hack Me project.
+This is the frontend for the Hack Me project. For this I'm using Svelte as a way to experiment with new technology, both the frontend and the backend is packaged as an image container and fully deploydable to the cloud
+
+You can view the video that demonstrate the website here.
 
 ## Getting Started
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 ### Prerequisites
 
@@ -19,26 +19,30 @@ You need to have [Node.js](httpss://nodejs.org/) installed. This project uses [p
 2.  Install NPM packages.
 
     Using pnpm (recommended):
+
     ```bash
     pnpm install
     ```
+
     Or, if you are using npm:
+
     ```bash
     npm install
     ```
 
-3. Run the development server:
+3.  Run the development server:
 
-Using pnpm:
-```bash
-pnpm dev
-```
+    Using pnpm:
 
-Or if you are using npm
+    ```bash
+    pnpm dev
+    ```
 
-```bash
-npm run dev
-```
+    Or if you are using npm
+
+    ```bash
+    npm run dev
+    ```
 
 ## Deployment
 
