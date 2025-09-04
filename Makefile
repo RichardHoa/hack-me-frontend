@@ -2,6 +2,8 @@
 run:
 	doppler run -- node build
 
+build:
+	doppler run -- pnpm build
 
 .PHONY: check
 check:
