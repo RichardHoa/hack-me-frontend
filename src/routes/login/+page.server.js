@@ -6,6 +6,7 @@ import axios from 'axios';
 import { OAuth2Client } from 'google-auth-library';
 import { jwtDecode } from 'jwt-decode';
 import { env } from '$env/dynamic/private';
+import { env as publicEnv } from '$env/dynamic/public';
 
 export const load = async (event) => {};
 
@@ -19,7 +20,7 @@ export const actions = {
 			const tokenResponse = await axios.post(
 				'https://github.com/login/oauth/access_token',
 				{
-					client_id: env.GITHUB_CLIENT_ID,
+					client_id: publicEnv.PUBLIC_GITHUB_CLIENT_ID,
 					client_secret: env.GITHUB_CLIENT_SECRET,
 					code: code
 				},

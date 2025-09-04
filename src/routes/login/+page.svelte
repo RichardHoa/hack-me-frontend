@@ -3,11 +3,12 @@
 
 	import { enhance } from '$app/forms';
 	import { page } from '$app/state';
+	import { env } from '$env/dynamic/public';
 	import { onMount } from 'svelte';
 
 	let { form } = $props();
 
-	const GITHUB_CLIENT_ID = 'Ov23lii1MxSizT3GNdKh';
+	const GITHUB_CLIENT_ID = env.PUBLIC_GITHUB_CLIENT_ID;
 	const GITHUB_AUTH_URL = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&scope=user:email`;
 
 	function handleGithubLogin() {
