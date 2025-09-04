@@ -1,6 +1,6 @@
 .PHONY: run
 run:
-	doppler run -- ORIGIN=http://localhost:3000 node build
+	doppler run -- sh -c 'ORIGIN=http://localhost:3000 node build'
 
 build:
 	doppler run -- pnpm build
