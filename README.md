@@ -14,7 +14,7 @@ You need to have [Node.js](httpss://nodejs.org/) installed. This project uses [p
 
 1.  Clone the repo
     ```bash
-    git clone [https://github.com/RichardHoa/hack-me-frontend.git](https://github.com/RichardHoa/hack-me-frontend.git)
+    git clone https://github.com/RichardHoa/hack-me-frontend.git
     ```
 2.  Install NPM packages.
 
