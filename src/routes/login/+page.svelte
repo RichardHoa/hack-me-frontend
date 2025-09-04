@@ -11,7 +11,7 @@
 	const GITHUB_AUTH_URL = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&scope=user:email`;
 
 	function handleGithubLogin() {
-		window.open(GITHUB_AUTH_URL, '_blank');
+		window.open(GITHUB_AUTH_URL, '_self');
 	}
 
 	let loginFormSubmit = $state(false);

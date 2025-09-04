@@ -11,5 +11,7 @@ check:
 	pnpm format --check
 # 	pnpm lint
 
-
+.PHONY: dev
+dev:
+	doppler run -- pnpm dev
 
