@@ -1,6 +1,6 @@
 .PHONY: run
 run:
-	doppler run -- sh -c 'ORIGIN=http://localhost:3000 node build'
+	doppler run -- sh -c 'ORIGIN=https://hack-me.duckdns.org node build'
 
 build:
 	doppler run -- pnpm build
