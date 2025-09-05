@@ -1,6 +1,5 @@
 <script>
 	// @ts-nocheck
-
 	import { ModeWatcher } from 'mode-watcher';
 	let { children, data } = $props();
 	import ThemeToggle from './ThemeToggle.svelte';

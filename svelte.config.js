@@ -6,8 +6,14 @@ const config = {
 		adapter: adapter(),
 
 		csp: {
+			mode: 'auto',
 			directives: {
-				'script-src': ['strict-dynamic', 'https: unsafe-inline'],
+				'script-src': [
+					'strict-dynamic',
+					'https:',
+					"'unsafe-inline'",
+					'sha256-ROCYlxtWUqR9ME4wxI9LchLFa/eBFKzkqmIeHvTRK00='
+				],
 				'object-src': ['none'],
 				'base-uri': ['none']
 			}
