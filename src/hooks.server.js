@@ -53,4 +53,26 @@ const handleAuth = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
-export const handle = sequence(handleParaglide, handleAuth);
+const handleCSP = async ({ event, resolve }) => {
+	const res = await resolve(event);
+
+	const ct = res.headers.get('content-type') || '';
+	if (!ct.includes('text/html')) return res;
+
+	const cspHeaderName = 'Content-Security-Policy';
+	const existing = res.headers.get(cspHeaderName) || '';
+	const fa = "frame-ancestors 'none'";
+
+	if (!/frame-ancestors/i.test(existing)) {
+		const sep = existing.trim() ? (existing.trim().endsWith(';') ? ' ' : '; ') : '';
+		res.headers.set(cspHeaderName, `${existing}${sep}${fa}`.trim());
+	}
+
+	if (!res.headers.has('X-Frame-Options')) {
+		res.headers.set('X-Frame-Options', 'DENY');
+	}
+
+	return res;
+};
+
+export const handle = sequence(handleParaglide, handleAuth, handleCSP);
