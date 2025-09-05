@@ -9,8 +9,7 @@ const config = {
 			directives: {
 				'script-src': ['strict-dynamic', 'https: unsafe-inline'],
 				'object-src': ['none'],
-				'base-uri': ['none'],
-				'frame-ancestors': ['none']
+				'base-uri': ['none']
 			}
 		}
 	}
