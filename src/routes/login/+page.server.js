@@ -8,7 +8,7 @@ import { jwtDecode } from 'jwt-decode';
 import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
 
-export const load = async (event) => {};
+export const load = async () => {};
 
 export const actions = {
 	'login/github': async (event) => {

@@ -101,6 +101,7 @@ export function axiosWithCookies(event) {
  * @returns {object | undefined} The user object if it exists, otherwise undefined.
  */
 export function requireLogin() {
+	// the locals is updated in the hook.server.js
 	const { locals } = getRequestEvent();
 
 	// @ts-ignore

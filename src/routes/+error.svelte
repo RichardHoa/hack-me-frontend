@@ -1,5 +1,11 @@
 <script>
 	import { page } from '$app/state';
+	import { SERVER_ERROR_MESSAGE } from '$lib/utils';
+
+	if (page.status === 500) {
+		page.error.message = SERVER_ERROR_MESSAGE;
+	}
+
 </script>
 
 <div>

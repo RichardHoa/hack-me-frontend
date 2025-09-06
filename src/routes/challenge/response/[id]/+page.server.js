@@ -15,34 +15,22 @@ export async function load({ params }) {
 	const purify = DOMPurify(window);
 
 	const user = requireLogin();
-	try {
-		const challengeResult = await axios.get(
-			`/challenges/responses?challengeResponseID=${params.id}`
-		);
-		const challengeResponse = challengeResult.data.data[0];
+	const challengeResult = await axios.get(`/challenges/responses?challengeResponseID=${params.id}`);
+	const challengeResponse = challengeResult.data.data[0];
 
-		const rawContent = challengeResponse.content;
-
-		if (!challengeResponse) {
-			throw error(400, `Challenge response: |${params.id}| cannot be found`);
-		}
-
-		challengeResponse.content = purify.sanitize(marked.parse(challengeResponse.content));
-
-		return {
-			challengeResponse: challengeResponse,
-			rawContent: rawContent,
-			user: user
-		};
-	} catch (err) {
-		console.error(err.response);
-
-		if (err.status && err.response?.data) {
-			throw error(err.status, err.response.data.message);
-		}
-
-		throw error(500, SERVER_ERROR_MESSAGE);
+	if (!challengeResponse) {
+		throw error(400, `Challenge response with id: ${params.id} cannot be found`);
 	}
+
+	const rawContent = challengeResponse.content;
+
+	challengeResponse.content = purify.sanitize(marked.parse(challengeResponse.content));
+
+	return {
+		challengeResponse: challengeResponse,
+		rawContent: rawContent,
+		user: user
+	};
 }
 
 export const actions = {
@@ -67,8 +55,6 @@ export const actions = {
 				message: response.data.message
 			};
 		} catch (err) {
-			console.error(err.response);
-
 			return fail(err.response?.status || 500, {
 				id: 'challengeResponse',
 				success: false,

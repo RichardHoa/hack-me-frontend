@@ -15,41 +15,31 @@ export async function load({ params }) {
 	marked.use({ renderer: lowerHeaderRenderer });
 	const window = new JSDOM('').window;
 	const purify = DOMPurify(window);
-	try {
-		const url = `/challenges?exactName=${params.challengeName}`;
-		const response = await axios.get(url);
+	const url = `/challenges?exactName=${params.challengeName}`;
+	const response = await axios.get(url);
 
-		const challenge = response.data.data[0];
-		if (!challenge) {
-			throw error(400, `Challenge name: |${params.challengeName}| cannot be found`);
-		}
-
-		const challengeID = response.data.data[0].id;
-		const responseResult = await axios.get(`/challenges/responses?challengeID=${challengeID}`);
-		const challengeResponses = responseResult.data.data;
-
-		// set to null as we do not need challenge response content
-		for (let i = 0; i < challengeResponses.length; i++) {
-			challengeResponses[i].content = null;
-		}
-
-		const rawChallengeContent = challenge.content;
-		challenge.content = purify.sanitize(marked.parse(challenge.content));
-
-		return {
-			challenge: challenge,
-			rawChallengeContent: rawChallengeContent,
-			challengeResponses: challengeResponses
-		};
-	} catch (err) {
-		console.error(err.response);
-
-		if (err.status && err.response?.data) {
-			throw error(err.status, err.response.data.message);
-		}
-
-		throw error(500, SERVER_ERROR_MESSAGE);
+	const challenge = response.data.data[0];
+	if (!challenge) {
+		throw error(400, `Challenge name: |${params.challengeName}| cannot be found`);
 	}
+
+	const challengeID = response.data.data[0].id;
+	const responseResult = await axios.get(`/challenges/responses?challengeID=${challengeID}`);
+	const challengeResponses = responseResult.data.data;
+
+	// set to null as we do not need challenge response content
+	for (let i = 0; i < challengeResponses.length; i++) {
+		challengeResponses[i].content = null;
+	}
+
+	const rawChallengeContent = challenge.content;
+	challenge.content = purify.sanitize(marked.parse(challenge.content));
+
+	return {
+		challenge: challenge,
+		rawChallengeContent: rawChallengeContent,
+		challengeResponses: challengeResponses
+	};
 }
 
 export const actions = {

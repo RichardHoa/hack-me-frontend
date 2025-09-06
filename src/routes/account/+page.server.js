@@ -14,21 +14,11 @@ export async function load(event) {
 
 	const axios = axiosWithCookies(event);
 
-	try {
-		const response = await axios.get('/users/me');
+	const response = await axios.get('/users/me');
 
-		return {
-			userData: response.data.data
-		};
-	} catch (err) {
-		console.error(err);
-
-		if (err?.status && err?.response.data) {
-			throw error(err.status, err.response.data.message);
-		}
-
-		throw error(500, SERVER_ERROR_MESSAGE);
-	}
+	return {
+		userData: response.data.data
+	};
 }
 
 export const actions = {
