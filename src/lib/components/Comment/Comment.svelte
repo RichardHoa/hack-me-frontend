@@ -31,8 +31,8 @@
 			action="?/comments/modify"
 			class="reply-form"
 			use:enhance={({ formElement, formData, action, cancel, submitter }) => {
+				isLoading = true;
 				return async ({ result, update }) => {
-					isLoading = true;
 					formResult = result.data;
 					await update();
 					if (result.data.success === true) {
@@ -80,8 +80,8 @@
 			action="?/comments/reply"
 			class="reply-form"
 			use:enhance={({ formElement, formData, action, cancel, submitter }) => {
+				isLoading = true;
 				return async ({ result, update }) => {
-					isLoading = true;
 					formResult = result.data;
 					await update();
 					isLoading = false;
@@ -123,8 +123,8 @@
 		class="reply-form"
 		style="display: none;"
 		use:enhance={({ formElement, formData, action, cancel, submitter }) => {
+			isLoading = true;
 			return async ({ result, update }) => {
-				isLoading = true;
 				formResult = result.data;
 				await update();
 				isLoading = false;

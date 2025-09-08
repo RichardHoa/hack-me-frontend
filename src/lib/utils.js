@@ -44,7 +44,7 @@ export const lowerHeaderRenderer = {
 };
 
 // --- Constants ---
-export const DEFAULT_PAGE_SIZE = 5;
+export const DEFAULT_PAGE_SIZE = 10;
 export const ACCESS_TOKEN_NAME = 'accessToken';
 export const REFRESH_TOKEN_NAME = 'refreshToken';
 export const SERVER_ERROR_MESSAGE = 'Our service is disrupted, please come back 5 minutes later';

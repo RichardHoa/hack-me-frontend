@@ -69,7 +69,6 @@
 	}
 
 	function onSearchChange() {
-		// Optionally debounce
 		fetchFilteredChallenges();
 	}
 

@@ -2,7 +2,9 @@
 
 This is the frontend for the Hack Me project. For this I'm using Svelte as a way to experiment with new technology, both the frontend and the backend is packaged as an image container and fully deploydable to the cloud
 
-You can view the video that demonstrate the website here.
+Website link: https://hack-me.duckdns.org/
+
+Warning: Because our production is running on southeast asian, but the vm instance is running on us, the database operation roughly takes about 1 second (very long), if you are in southeast asian, the query would typically takes 200ms (acceptable)
 
 ## Getting Started
 
@@ -46,7 +48,7 @@ You need to have [Node.js](httpss://nodejs.org/) installed. This project uses [p
 
 ## Deployment
 
-This project includes a `Dockerfile` for production deployment. While you can use it for local deployment, it is not necessary. There is no Github Actions pipeline for this project so I use Makefile to deploy to the cloud, this is not proper production practice
+This project includes a `Dockerfile` for production deployment. While you can use it for local deployment, it is not necessary. 
 
 ## Full local development
 

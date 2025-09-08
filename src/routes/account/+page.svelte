@@ -6,6 +6,8 @@
 	const challenges = data.userData.challenges;
 	const challengeResponses = data.userData.challengeResponses;
 	const user = $derived(data.userData.user);
+
+	let isLoading = $state(false);
 </script>
 
 <svelte:head>
@@ -70,10 +72,20 @@
 		<div class="forms-section">
 			<div class="form-card">
 				<h2>Change Username</h2>
-				<form action="?/changeUsername" method="POST" use:enhance>
+				<form
+					action="?/changeUsername"
+					method="POST"
+					use:enhance={({ formElement, formData, action, cancel, submitter }) => {
+						isLoading = true;
+						return async ({ result, update }) => {
+							await update();
+							isLoading = false;
+						};
+					}}
+				>
 					<label for="newUsername">New Username</label>
 					<input type="text" id="newUsername" name="newUsername" required />
-					<button type="submit" class="submit-button">Change Username</button>
+					<button type="submit" class="submit-button" disabled={isLoading}>Change Username</button>
 					{#if form?.id === 'changeUsername'}
 						<p class:success-message={form?.success} class:error-message={!form?.success}>
 							{form?.message}
@@ -84,7 +96,17 @@
 
 			<div class="form-card">
 				<h2>Change Password</h2>
-				<form action="?/changePassword" method="POST" use:enhance>
+				<form
+					action="?/changePassword"
+					method="POST"
+					use:enhance={({ formElement, formData, action, cancel, submitter }) => {
+						isLoading = true;
+						return async ({ result, update }) => {
+							await update();
+							isLoading = false;
+						};
+					}}
+				>
 					<label for="oldPassword">Old Password</label>
 					<input type="password" id="oldPassword" name="oldPassword" required />
 					<label for="newPassword">New Password</label>
@@ -100,7 +122,17 @@
 
 			<div class="form-card">
 				<h2>Delete Account</h2>
-				<form action="?/deleteAccount" method="POST" use:enhance>
+				<form
+					action="?/deleteAccount"
+					method="POST"
+					use:enhance={({ formElement, formData, action, cancel, submitter }) => {
+						isLoading = true;
+						return async ({ result, update }) => {
+							await update();
+							isLoading = false;
+						};
+					}}
+				>
 					<p>This action is irreversible. All your data will be lost.</p>
 					<button type="submit" class="submit-button error-message">Delete My Account</button>
 					{#if form?.id === 'deleteAccount' && !form?.success}
@@ -110,11 +142,19 @@
 			</div>
 		</div>
 
-		<form action="?/users/logout" method="POST" use:enhance>
+		<form
+			action="?/users/logout"
+			method="POST"
+			use:enhance={({ formElement, formData, action, cancel, submitter }) => {
+				isLoading = true;
+				return async ({ result, update }) => {
+					await update();
+					isLoading = false;
+				};
+			}}
+		>
 			<button type="submit" class="submit-button">Logout</button>
 		</form>
-	{:else}
-		<h1>There is error from the server, please come back later</h1>
 	{/if}
 </div>
 

@@ -13,7 +13,6 @@
 	let comments = $derived(data.challenge.comments);
 	let challengeResponses = $derived(data.challengeResponses);
 
-	let selectedVoteType = $state('');
 	let editMode = $state(false);
 	let challengeResponseMode = $state(false);
 	let commentSubmit = $state(false);
@@ -95,10 +94,8 @@
 					method="POST"
 					action="?/challenges/responses/votes"
 					use:enhance={({ formElement, formData, action, cancel, submitter }) => {
-						selectedVoteType = formData.get('voteType');
-
+						formSubmit = true;
 						return async ({ result, update }) => {
-							formSubmit = true;
 							await update();
 							formSubmit = false;
 						};
