@@ -5,7 +5,6 @@
 	if (page.status === 500) {
 		page.error.message = SERVER_ERROR_MESSAGE;
 	}
-
 </script>
 
 <div>
