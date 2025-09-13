@@ -2,7 +2,6 @@
 
 This is the frontend for the Hack Me project. For this I'm using Svelte as a way to experiment with new technology, both the frontend and the backend is packaged as an image container and fully deploydable to the cloud
 
-Website link: https://hack-me.duckdns.org/
 
 Warning: Because our production is running on southeast asian, but the vm instance is running on us, the database operation roughly takes about 1 second (very long), if you are in southeast asian, the query would typically takes 200ms (acceptable)
 
