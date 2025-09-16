@@ -2,7 +2,6 @@
 
 This is the frontend for the Hack Me project. For this I'm using Svelte as a way to experiment with new technology, both the frontend and the backend is packaged as an image container and fully deploydable to the cloud
 
-
 Warning: Because our production is running on southeast asian, but the vm instance is running on us, the database operation roughly takes about 1 second (very long), if you are in southeast asian, the query would typically takes 200ms (acceptable)
 
 ## Getting Started
@@ -53,6 +52,6 @@ This project includes a `Dockerfile` for production deployment. While you can us
 
 For a full local development experience, you will need to run the backend server as well. You can find the backend repository and instructions here: [backend repo](https://github.com/RichardHoa/hack-me)
 
-
 ## TODO list
+
 [ ] add time to be GMT time rather than just time
