@@ -17,9 +17,9 @@ const handleParaglide = ({ event, resolve }) =>
 const handleAuth = async ({ event, resolve }) => {
 	// console.log('event cookies before checking');
 	// event.cookies.getAll().map((each) => console.log(each));
-
 	let accessToken = event.cookies.get(ACCESS_TOKEN_NAME);
 	const refreshToken = event.cookies.get(REFRESH_TOKEN_NAME);
+
 	event.locals.user = null;
 
 	if (!accessToken && refreshToken) {
@@ -27,6 +27,7 @@ const handleAuth = async ({ event, resolve }) => {
 
 		try {
 			const response = await axios.get('/auth/tokens');
+
 			fetchAndSetTokens(response, event);
 			// get access token after fetching
 			accessToken = event.cookies.get(ACCESS_TOKEN_NAME);
@@ -38,6 +39,7 @@ const handleAuth = async ({ event, resolve }) => {
 	// console.log('event cookie after checking');
 	// event.cookies.getAll().map((each) => console.log(each));
 	let payload;
+
 	try {
 		payload = jwtDecode(accessToken);
 	} catch (err) {
@@ -45,18 +47,22 @@ const handleAuth = async ({ event, resolve }) => {
 	}
 
 	const { iat, exp } = payload;
-
 	const refreshTokenPayload = jwtDecode(refreshToken);
 
-	event.locals.user = { userName: refreshTokenPayload.userName, iat, exp, ...payload };
+	event.locals.user = {
+		userName: refreshTokenPayload.userName,
+		iat,
+		exp,
+		...payload
+	};
 
 	return resolve(event);
 };
 
 const handleCSP = async ({ event, resolve }) => {
 	const res = await resolve(event);
-
 	const ct = res.headers.get('content-type') || '';
+
 	if (!ct.includes('text/html')) return res;
 
 	const cspHeaderName = 'Content-Security-Policy';
@@ -65,6 +71,7 @@ const handleCSP = async ({ event, resolve }) => {
 
 	if (!/frame-ancestors/i.test(existing)) {
 		const sep = existing.trim() ? (existing.trim().endsWith(';') ? ' ' : '; ') : '';
+
 		res.headers.set(cspHeaderName, `${existing}${sep}${fa}`.trim());
 	}
 

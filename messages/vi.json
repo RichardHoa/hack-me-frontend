@@ -1,6 +1,6 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
-	"hello_world": "Xin chào {name} từ Việt Nam!",
+	"hello_world": "Hello, {name} from vi!",
 	"hello_text": "Xin chào",
 	"trick_front_lion_create": "Tác giả backend và frontend: <a href='https://richardhoa.github.io/' target='_blank' rel='noopener noreferrer'> Đặng Thái Hoà </a>",
 	"safe_aloof_lobster_hunt": "Trang trước",
