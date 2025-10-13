@@ -8,8 +8,8 @@ module.exports = {
 			instances: 1,
 			exec_mode: 'fork',
 			autorestart: true,
-			out_file: '/home/richardhoa_work/codes/hack-me-frontend/out.log',
-			error_file: '/home/richardhoa_work/codes/hack-me-frontend/err.log',
+			out_file: '/home/ubuntu/codes/hack-me-frontend/out.log',
+			error_file: '/home/ubuntu/codes/hack-me-frontend/err.log',
 			merge_logs: true
 		}
 	]
