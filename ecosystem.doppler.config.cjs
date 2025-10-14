@@ -2,7 +2,7 @@ module.exports = {
 	apps: [
 		{
 			name: 'hack-me-frontend',
-			cwd: '/home/richardhoa_work/codes/hack-me-frontend',
+			cwd: '/home/ubuntu/codes/hack-me-frontend',
 			script: 'doppler',
 			args: "run -- bash -lc 'make run'",
 			instances: 1,
