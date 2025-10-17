@@ -23,7 +23,6 @@
 <header>
 	<nav>
 		<a class="skip-to-content-link" href="#main"> Skip to main content </a>
-		<img src="" alt="Logo" class="logo" />
 		<div>
 			<ul class="menu">
 				<li>
@@ -139,15 +138,9 @@
 	nav {
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
 		height: 60px;
 		width: 100%;
 		background-color: var(--background);
-	}
-
-	nav img {
-		height: 40px;
-		object-fit: contain;
 	}
 
 	nav > div {
@@ -155,6 +148,7 @@
 		align-items: center;
 		margin-right: 30px;
 		gap: 1.5rem;
+		margin-left: auto;
 	}
 
 	nav ul {
@@ -185,7 +179,7 @@
 
 		nav > div {
 			flex-direction: column;
-			margin-right: 0; /* Remove the margin for centered alignment */
+			margin: 0 auto; /* Remove the margin for centered alignment */
 		}
 
 		nav ul {
