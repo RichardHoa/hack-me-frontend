@@ -92,9 +92,9 @@
 	}
 
 	* {
-		border: 1px solid black;
 		box-sizing: border-box;
 	}
+
 	body {
 		line-height: 1;
 		display: flex;
