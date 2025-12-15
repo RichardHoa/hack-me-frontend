@@ -33,7 +33,7 @@
 				<ul>
 					{#each challenges as challenge}
 						<li>
-							<a href="/challenge/{challenge.name}">{challenge.name}</a>
+							<a href="/challenge/{encodeURIComponent(challenge.name)}">{challenge.name}</a>
 							<p>Category: {challenge.category}</p>
 							<p>Comments: {challenge.commentCount}</p>
 							<p>Responses: {challenge.responseCount}</p>
