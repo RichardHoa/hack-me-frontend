@@ -6,6 +6,7 @@ import { error, fail, redirect } from '@sveltejs/kit';
 
 export async function load(event) {
 	const user = requireLogin();
+	let response = null;
 
 	// no auth cookie is present case
 	if (!user) {
@@ -14,7 +15,14 @@ export async function load(event) {
 
 	const axios = axiosWithCookies(event);
 
-	const response = await axios.get('/users/me');
+	try {
+		response = await axios.get('/users/me');
+	} catch (err) {
+		console.log(err);
+		error(err.response?.status || 500, {
+			message: err.response?.data?.message || SERVER_ERROR_MESSAGE
+		});
+	}
 
 	return {
 		userData: response.data.data
