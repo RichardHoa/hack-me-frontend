@@ -18,7 +18,6 @@ export async function load(event) {
 	try {
 		response = await axios.get('/users/me');
 	} catch (err) {
-		console.log(err);
 		error(err.response?.status || 500, {
 			message: err.response?.data?.message || SERVER_ERROR_MESSAGE
 		});

@@ -13,12 +13,13 @@ axios.defaults.withCredentials = true;
 
 /**
  * Formats a date string into a more readable 'DD/MM/YYYY, HH:MM' format.
- * @param {string} dateStr - The ISO date string to format.
+ * @param {string} dateStr - The ISO date string to format. EX: 2025-12-19T10:40:50.448502+07:00
  * @returns {string} The formatted date string.
  */
 export function formatDate(dateStr) {
 	const date = new Date(dateStr);
-	return date.toLocaleString('en-GB', {
+
+	const formattedDate = date.toLocaleString('en-GB', {
 		day: '2-digit',
 		month: '2-digit',
 		year: 'numeric',
@@ -26,6 +27,14 @@ export function formatDate(dateStr) {
 		minute: '2-digit',
 		hour12: false
 	});
+
+	const offsetMinutes = -date.getTimezoneOffset();
+	const hours = Math.floor(Math.abs(offsetMinutes) / 60);
+	const sign = offsetMinutes >= 0 ? '+' : '-';
+
+	const utcString = `UTC${sign}${hours}`;
+
+	return `${formattedDate} ${utcString}`;
 }
 
 /**

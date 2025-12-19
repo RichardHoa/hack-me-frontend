@@ -7,7 +7,14 @@ export async function load(event) {
 	const axios = axiosWithCookies(event);
 
 	const url = `/challenges?pageSize=${DEFAULT_PAGE_SIZE}`;
-	const response = await axios.get(url);
+	let response;
+	try {
+		response = await axios.get(url);
+	} catch (err) {
+		error(err.response?.status || 500, {
+			message: err.response?.data?.message || SERVER_ERROR_MESSAGE
+		});
+	}
 
 	return {
 		data: response.data

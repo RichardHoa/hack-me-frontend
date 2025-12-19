@@ -51,7 +51,3 @@ This project includes a `Dockerfile` for production deployment. While you can us
 ## Full local development
 
 For a full local development experience, you will need to run the backend server as well. You can find the backend repository and instructions here: [backend repo](https://github.com/RichardHoa/hack-me)
-
-## TODO list
-
-[ ] add time to be GMT time rather than just time
