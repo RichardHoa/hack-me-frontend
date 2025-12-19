@@ -82,6 +82,10 @@
 
 	<br />
 	{@html m.trick_front_lion_create()}
+	.
+	<a href="https://github.com/RichardHoa/hack-me-frontend" target="_blank" rel="noopener noreferrer"
+		>Github repo</a
+	>
 </footer>
 
 <style>

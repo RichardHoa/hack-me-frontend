@@ -11,7 +11,8 @@ const config = {
 					'strict-dynamic',
 					'https:',
 					"'unsafe-inline'",
-					'sha256-ROCYlxtWUqR9ME4wxI9LchLFa/eBFKzkqmIeHvTRK00='
+					'sha256-ROCYlxtWUqR9ME4wxI9LchLFa/eBFKzkqmIeHvTRK00=',
+					'sha256-oOU4MxtCWQ62F7icj69SaREaDhbdyXILlAZ+wog1m9M=',
 				],
 				'object-src': ['none'],
 				'base-uri': ['none'],

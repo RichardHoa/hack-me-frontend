@@ -42,7 +42,7 @@
 		}
 
 		window.google.accounts.id.initialize({
-			client_id: '1025927927956-2v6pno708qqkchj3u2gq5g9j2ni4hn2u.apps.googleusercontent.com',
+			client_id: env.PUBLIC_GOOGLE_CLIENT_ID,
 			callback: handleGoogleLogin
 		});
 

@@ -62,7 +62,7 @@ export const actions = {
 				fetchAndSetTokens(response, event);
 				return { id: 'login', success: true, message: response.data.message };
 			} catch (loginError) {
-				if (loginError.response?.status !== 400) {
+				if (loginError.response?.status !== 404) {
 					return fail(loginError.response?.status || 500, {
 						id: 'login',
 						success: false,
@@ -111,19 +111,21 @@ export const actions = {
 		const token = formData.get('jwtToken');
 
 		const client = new OAuth2Client();
-		const ticket = await client.verifyIdToken({
-			idToken: token,
-			audience: '1025927927956-2v6pno708qqkchj3u2gq5g9j2ni4hn2u.apps.googleusercontent.com'
-		});
-
-		const payload = ticket.getPayload();
-
-		const name = payload['name'];
-		const email = payload['email'];
-		const imageLink = payload['picture'];
-		const googleID = payload['sub'];
+		let name, email, imageLink, googleID;
 
 		try {
+			const ticket = await client.verifyIdToken({
+				idToken: token,
+				audience: publicEnv.PUBLIC_GOOGLE_CLIENT_ID
+			});
+
+			const payload = ticket.getPayload();
+
+			name = payload['name'];
+			email = payload['email'];
+			imageLink = payload['picture'];
+			googleID = payload['sub'];
+
 			const response = await axios.post('/users/login', {
 				googleID: googleID,
 				email: email
@@ -132,38 +134,39 @@ export const actions = {
 			fetchAndSetTokens(response, event);
 			return { id: 'login', success: true, message: response.data.message };
 		} catch (loginError) {
-			if (loginError.response?.status !== 400) {
+			if (loginError.response?.status !== 404) {
 				return fail(loginError.response?.status || 500, {
 					id: 'login',
 					success: false,
 					message: loginError.response?.data?.message || SERVER_ERROR_MESSAGE
 				});
 			}
+		}
 
-			try {
-				// Step 1: Register the new user
-				await axios.post('/users', {
-					userName: name,
-					email: email,
-					imageLink: imageLink,
-					googleID: googleID
-				});
 
-				// Step 2: Log in the newly created user
-				const secondLoginResponse = await axios.post('/users/login', {
-					googleID: googleID,
-					email: email
-				});
+		try {
+			// Step 1: Register the new user
+			await axios.post('/users', {
+				userName: name,
+				email: email,
+				imageLink: imageLink,
+				googleID: googleID
+			});
 
-				fetchAndSetTokens(secondLoginResponse, event);
-				return { id: 'login', success: true, message: secondLoginResponse.data.message };
-			} catch (registrationError) {
-				return fail(registrationError.response?.status || 500, {
-					id: 'login',
-					success: false,
-					message: registrationError.response?.data?.message || SERVER_ERROR_MESSAGE
-				});
-			}
+			// Step 2: Log in the newly created user
+			const secondLoginResponse = await axios.post('/users/login', {
+				googleID: googleID,
+				email: email
+			});
+
+			fetchAndSetTokens(secondLoginResponse, event);
+			return { id: 'login', success: true, message: secondLoginResponse.data.message };
+		} catch (registrationError) {
+			return fail(registrationError.response?.status || 500, {
+				id: 'login',
+				success: false,
+				message: registrationError.response?.data?.message || SERVER_ERROR_MESSAGE
+			});
 		}
 	},
 	login: async (event) => {
