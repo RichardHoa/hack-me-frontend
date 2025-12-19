@@ -82,6 +82,11 @@ const handleCSP = async ({ event, resolve }) => {
 	res.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
 	res.headers.set('X-XSS-Protection', '1; mode=block');
 	res.headers.set('X-Content-Type-Options', 'nosniff');
+	res.headers.set('Referrer-Policy', 'no-referrer');
+	res.headers.set(
+		'Permissions-Policy',
+		'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+	);
 
 	return res;
 };
