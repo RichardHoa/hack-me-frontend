@@ -143,7 +143,6 @@ export const actions = {
 			}
 		}
 
-
 		try {
 			// Step 1: Register the new user
 			await axios.post('/users', {
